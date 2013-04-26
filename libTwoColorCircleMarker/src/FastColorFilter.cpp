@@ -50,7 +50,7 @@ void FastColorFilter::init()
 		{
 			RgbLut[i]=COLORCODE_WHT;
 		}
-		else if (r >= 160 &&  r >= g+64 && r >= b+32 || (r < 160 && r >= g+32 && r >= b+32))
+		else if ((r >= 160 &&  r >= g+64 && r >= b+32) || (r < 160 && r >= g+32 && r >= b+32))
 		{
 			RgbLut[i]=COLORCODE_RED;
 		}
