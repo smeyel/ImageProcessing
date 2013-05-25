@@ -29,7 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Framework\libMiscTimeAndConfig\libMiscTimeAndConfig.vcxproj">
-      <Project>{7decfa8a-bc81-4def-9953-453b3e347fb9}</Project>
+      <Project>{9e89c9bd-92d5-46a6-b7ab-b59a0ddfb391}</Project>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
