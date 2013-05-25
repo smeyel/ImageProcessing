@@ -9,7 +9,7 @@
 #include "MarkerCC2.h"
 
 #include "TimeMeasurementCodeDefines.h"
-#include "ConfigManagerBase.h"
+#include "SimpleIniConfigReader.h"
 #include "Logger.h"
 
 #define COLORCODE_INITIAL 254	// Used to indicate no valid value, even no "unrecognized color"
@@ -18,23 +18,26 @@
 using namespace cv;
 using namespace std;
 using namespace TwoColorCircleMarker;
-using namespace Logging;
+using namespace LogConfigTime;
 
 #define LOG_TAG "SMEyeL::MarkerCC2"
 
 // Config manager
 MarkerCC2::ConfigManager MarkerCC2::configManager;
 
-bool MarkerCC2::ConfigManager::readConfiguration(CSimpleIniA *ini)
+bool MarkerCC2::ConfigManager::readConfiguration(char *filename)
 {
-	showMarkerCodeOnImageDec = ini->GetBoolValue("MarkerCC2","showMarkerCodeOnImageDec",false,NULL);
-	showMarkerCodeOnImageHex = ini->GetBoolValue("MarkerCC2","showMarkerCodeOnImageHex",false,NULL);
-	verboseLineScanning = ini->GetBoolValue("MarkerCC2","verboseLineScanning",false,NULL);
-	verboseEllipseFitting = ini->GetBoolValue("MarkerCC2","verboseEllipseFitting",false,NULL);
-	verboseEllipseScanning = ini->GetBoolValue("MarkerCC2","verboseEllipseScanning",false,NULL);
-	verboseMarkerCodeValidation = ini->GetBoolValue("MarkerCC2","verboseMarkerCodeValidation",false,NULL);
-	verboseTxt_LineRejectionReason = ini->GetBoolValue("MarkerCC2","verboseTxt_LineRejectionReason",false,NULL);
-	verboseTxt_MarkerCodeValidation = ini->GetBoolValue("MarkerCC2","verboseTxt_MarkerCodeValidation",false,NULL);
+	LogConfigTime::SimpleIniConfigReader *SIreader = new LogConfigTime::SimpleIniConfigReader(filename);
+	LogConfigTime::ConfigReader *reader = SIreader;
+
+	showMarkerCodeOnImageDec = reader->getBoolValue("MarkerCC2","showMarkerCodeOnImageDec");
+	showMarkerCodeOnImageHex = reader->getBoolValue("MarkerCC2","showMarkerCodeOnImageHex");
+	verboseLineScanning = reader->getBoolValue("MarkerCC2","verboseLineScanning");
+	verboseEllipseFitting = reader->getBoolValue("MarkerCC2","verboseEllipseFitting");
+	verboseEllipseScanning = reader->getBoolValue("MarkerCC2","verboseEllipseScanning");
+	verboseMarkerCodeValidation = reader->getBoolValue("MarkerCC2","verboseMarkerCodeValidation");
+	verboseTxt_LineRejectionReason = reader->getBoolValue("MarkerCC2","verboseTxt_LineRejectionReason");
+	verboseTxt_MarkerCodeValidation = reader->getBoolValue("MarkerCC2","verboseTxt_MarkerCodeValidation");
 	return true;	// Successful
 }
 
@@ -255,7 +258,7 @@ bool MarkerCC2::findBordersAlongLine(Mat &srcCC, int dir)
 					// This cannot be OK.
 					if (configManager.verboseTxt_LineRejectionReason)
 					{
-						Logger::log(Logger::LOGLEVEL_VERBOSE, LOG_TAG, "MarkerCC2.findBordersAlongLine() LineRejection reson: found GRN after BLU, dir=%d\n", dir);
+						Logger::getInstance()->Log(Logger::LOGLEVEL_VERBOSE, LOG_TAG, "MarkerCC2.findBordersAlongLine() LineRejection reson: found GRN after BLU, dir=%d\n", dir);
 					}
 					return false;	// Immediate reject
 				}
@@ -273,7 +276,7 @@ bool MarkerCC2::findBordersAlongLine(Mat &srcCC, int dir)
 					// Green cannot come here. If it does, marker is rejected.
 					if (configManager.verboseTxt_LineRejectionReason)
 					{
-						Logger::log(Logger::LOGLEVEL_VERBOSE, LOG_TAG, "MarkerCC2.findBordersAlongLine() LineRejection reson: found GRN after BLU, dir=%d\n", dir);
+						Logger::getInstance()->Log(Logger::LOGLEVEL_VERBOSE, LOG_TAG, "MarkerCC2.findBordersAlongLine() LineRejection reson: found GRN after BLU, dir=%d\n", dir);
 					}
 					return false;	// Immediate reject
 				}
@@ -291,7 +294,7 @@ bool MarkerCC2::findBordersAlongLine(Mat &srcCC, int dir)
 					// Blue cannot come here. Marker is rejected
 					if (configManager.verboseTxt_LineRejectionReason)
 					{
-						Logger::log(Logger::LOGLEVEL_VERBOSE, LOG_TAG, "MarkerCC2.findBordersAlongLine() LineRejection reson: found BLU after RED, dir=%d\n", dir);
+						Logger::getInstance()->Log(Logger::LOGLEVEL_VERBOSE, LOG_TAG, "MarkerCC2.findBordersAlongLine() LineRejection reson: found BLU after RED, dir=%d\n", dir);
 					}
 					return false;	// Immediate reject
 					break;
@@ -439,7 +442,7 @@ void MarkerCC2::validateAndConsolidateMarkerCode()
 	if (configManager.verboseTxt_MarkerCodeValidation )
 	{
 		logMsg << ", GRN@(" << firstGreenIdx << "-" << lastGreenIdx << ")->" << greenIdx << endl;
-		Logger::log(Logger::LOGLEVEL_VERBOSE, LOG_TAG, logMsg.str().c_str());
+		Logger::getInstance()->Log(Logger::LOGLEVEL_VERBOSE, LOG_TAG, logMsg.str().c_str());
 		logMsg.str(""); // clear
 	}
 
@@ -501,7 +504,7 @@ void MarkerCC2::validateAndConsolidateMarkerCode()
 	if (configManager.verboseTxt_MarkerCodeValidation )
 	{
 		logMsg << ", code=" << code << endl;
-		Logger::log(Logger::LOGLEVEL_VERBOSE, LOG_TAG, logMsg.str().c_str());
+		Logger::getInstance()->Log(Logger::LOGLEVEL_VERBOSE, LOG_TAG, logMsg.str().c_str());
 		logMsg.str(""); // clear
 	}
 

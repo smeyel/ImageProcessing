@@ -8,7 +8,7 @@
 #include "MarkerCC2Locator.h"
 
 #include "TimeMeasurement.h"
-#include "ConfigManagerBase.h"
+#include "SimpleIniConfigReader.h"
 
 using namespace cv;
 
@@ -25,12 +25,18 @@ namespace TwoColorCircleMarker
 	class MarkerCC2 : public MarkerBase
 	{
 		// Internal configuration class
-		class ConfigManager : public MiscTimeAndConfig::ConfigManagerBase
+		class ConfigManager //: public MiscTimeAndConfig::ConfigManagerBase
 		{
 			// This method is called by init of the base class to read the configuration values.
-			virtual bool readConfiguration(CSimpleIniA *ini);
+//			virtual bool readConfiguration(CSimpleIniA *ini);
+			virtual bool readConfiguration(char *filename);
 
 		public:
+			void init(char *filename)
+			{
+				readConfiguration(filename);
+			}
+
 			bool showMarkerCodeOnImageDec;
 			bool showMarkerCodeOnImageHex;
 

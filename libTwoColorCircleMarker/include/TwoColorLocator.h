@@ -5,7 +5,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/core/mat.hpp>
 #include "FastColorFilter.h"
-#include "ConfigManagerBase.h"
+#include "SimpleIniConfigReader.h"
 
 using namespace cv;
 
@@ -27,13 +27,17 @@ namespace TwoColorCircleMarker
 	class TwoColorLocator
 	{
 		// Internal configuration class
-		class ConfigManager : public MiscTimeAndConfig::ConfigManagerBase
+		class ConfigManager
 		{
-			// This method is called by init of the base class to read the configuration values.
-			virtual bool readConfiguration(CSimpleIniA *ini);
+			virtual bool readConfiguration(char *filename);
 
 		public:
-			// Verbose marker localization
+			void init(char *filename)
+			{
+				readConfiguration(filename);
+			}
+
+			// --- Settings
 			bool verboseRectConsolidationCandidates;
 			bool verboseRectConsolidationResults;
 			bool verboseTxt_RectConsolidation;

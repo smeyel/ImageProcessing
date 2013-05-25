@@ -9,7 +9,7 @@
 #include "Logger.h"
 
 using namespace std;
-using namespace Logging;
+using namespace LogConfigTime;
 
 #define LOG_TAG "SMEyeL::FastColorFilter"
 
@@ -145,7 +145,7 @@ void FastColorFilter::RegisterDetection(int row, int colStart, int colEnd)
 		if (!foundFreeDetectionRect)
 		{
 			// Send warning in this case!
-			Logger::log(Logger::LOGLEVEL_WARNING, LOG_TAG, "WARNING: FastColorFilter: no enough detection rectangle space to store detections!\n");
+			Logger::getInstance()->Log(Logger::LOGLEVEL_WARNING, LOG_TAG, "WARNING: FastColorFilter: no enough detection rectangle space to store detections!\n");
 		}
 	}
 }
@@ -173,7 +173,7 @@ void FastColorFilter::FinishRow(int rowIdx)
 			if (nextFreeCandidateRectIdx >= MAXCANDIDATERECTNUM)
 			{
 				nextFreeCandidateRectIdx = MAXCANDIDATERECTNUM-1;
-				Logger::log(Logger::LOGLEVEL_WARNING, LOG_TAG, "WARNING: FastColorFilter: no enough candidate marker rectangle space!\n");
+				Logger::getInstance()->Log(Logger::LOGLEVEL_WARNING, LOG_TAG, "WARNING: FastColorFilter: no enough candidate marker rectangle space!\n");
 			}
 
 			// Delete detection rect

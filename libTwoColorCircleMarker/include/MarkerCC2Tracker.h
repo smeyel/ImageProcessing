@@ -12,10 +12,10 @@
 
 #include "DetectionResultExporterBase.h"
 
-#include "ConfigManagerBase.h"
+#include "SimpleIniConfigReader.h"
 
 using namespace cv;
-using namespace MiscTimeAndConfig;
+using namespace LogConfigTime;
 
 namespace TwoColorCircleMarker
 {
@@ -34,10 +34,17 @@ namespace TwoColorCircleMarker
 	class MarkerCC2Tracker
 	{
 		// Internal configuration class
-		class ConfigManager : public MiscTimeAndConfig::ConfigManagerBase
+		class ConfigManager
 		{
 			// This method is called by init of the base class to read the configuration values.
-			virtual bool readConfiguration(CSimpleIniA *ini);
+			virtual bool readConfiguration(char *filename);
+
+		public:
+			void init(char *filename)
+			{
+				readConfiguration(filename);
+			}
+
 		public:
 			// Show verbose frames
 			bool visualizeColorCodedFrame;
