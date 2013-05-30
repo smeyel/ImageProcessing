@@ -19,3 +19,4 @@ Release/
 *.o
 *.lib
 doc/html/
+libTimeSyncBeacon/test/test
