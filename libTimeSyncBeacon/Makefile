@@ -7,7 +7,7 @@ LDFLAGS =
 all: libTimeSyncBeacon.a
 
 
-LIBTIMESYNCBEACON_OBJECTS =  
+LIBTIMESYNCBEACON_OBJECTS = src/TimeSyncBeaconConverter.o
 
 
 libTimeSyncBeacon.a: $(LIBTIMESYNCBEACON_OBJECTS)

@@ -19,4 +19,5 @@ Release/
 *.o
 *.lib
 doc/html/
+libTimeSyncBeacon/test/testConverter
 libTimeSyncBeacon/test/test
