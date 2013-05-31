@@ -22,9 +22,17 @@ int main( int argc, char** argv )
         return -1;
     }
 
-    namedWindow( "Display window", CV_WINDOW_AUTOSIZE );// Create a window for display.
-    imshow( "Display window", image );                   // Show our image inside it.
+    Mat channel[3];
+    split(image, channel);
 
-    waitKey(0);                                          // Wait for a keystroke in the window
+    MatIterator_<uchar> it, end;
+    for( it = channel[2].begin<uchar>(), end = channel[2].end<uchar>(); it != end; ++it)
+    {
+        (*it)=((*it)>150)?255:0;
+    }
+    namedWindow( "Display window", CV_WINDOW_AUTOSIZE );// Create a window for display.
+    imshow( "Display window", channel[2] );                   // Show our image inside it.
+
+    while (waitKey(0) != 'q');                                          // Wait for a keystroke in the window
     return 0;
 }
