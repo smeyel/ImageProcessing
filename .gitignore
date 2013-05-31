@@ -21,3 +21,6 @@ Release/
 doc/html/
 libTimeSyncBeacon/test/testConverter
 libTimeSyncBeacon/test/test
+libTimeSyncBeacon/test/testReader
+.project
+.cproject
