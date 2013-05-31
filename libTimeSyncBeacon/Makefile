@@ -18,5 +18,6 @@ libTimeSyncBeacon.a: $(LIBTIMESYNCBEACON_OBJECTS)
 	
 clean:
 	rm -rf src/*.o libTimeSyncBeacon.a
+	make -C test clean
 	
 .PHONY: all clean
