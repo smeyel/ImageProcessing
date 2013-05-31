@@ -1,38 +1,80 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include "opencv2/imgproc/imgproc.hpp"
 #include <iostream>
 
 using namespace cv;
 using namespace std;
 
+Mat sourceImage;
+
 int main( int argc, char** argv )
 {
-    if( argc != 2)
-    {
-     cout <<" Usage: " << argv[0] << " display_image ImageToLoadAndDisplay" << endl;
-     return -1;
-    }
+	if( argc != 2)
+	{
+		cout <<" Usage: " << argv[0] << " display_image ImageToLoadAndDisplay" << endl;
+		return -1;
+	}
 
-    Mat image;
-    image = imread(argv[1], CV_LOAD_IMAGE_COLOR);   // Read the file
+	sourceImage = imread(argv[1], CV_LOAD_IMAGE_COLOR);   // Read the file
 
-    if(! image.data )                              // Check for invalid input
-    {
-        cout <<  "Could not open or find the image" << std::endl ;
-        return -1;
-    }
+	if(! sourceImage.data )                              // Check for invalid input
+	{
+		cout <<  "Could not open or find the image" << std::endl ;
+		return -1;
+	}
 
-    Mat channel[3];
-    split(image, channel);
+	namedWindow( "Display window", CV_WINDOW_AUTOSIZE );// Create a window for display.
 
-    MatIterator_<uchar> it, end;
-    for( it = channel[2].begin<uchar>(), end = channel[2].end<uchar>(); it != end; ++it)
-    {
-        (*it)=((*it)>150)?255:0;
-    }
-    namedWindow( "Display window", CV_WINDOW_AUTOSIZE );// Create a window for display.
-    imshow( "Display window", channel[2] );                   // Show our image inside it.
+	char key=0;
+	unsigned char threshold=150;
+	do {
+		switch (key) {
+		case 'I':
+			threshold += 10;
+			break;
+		case 'D':
+			threshold -= 10;
+			break;
+		case 'i':
+			threshold += 1;
+			break;
+		case 'd':
+			threshold -= 1;
+			break;
+		}
+		cout << "Threshold = " << (unsigned)threshold << endl;
 
-    while (waitKey(0) != 'q');                                          // Wait for a keystroke in the window
-    return 0;
+		Mat channel[3];
+		split(sourceImage, channel);
+		MatIterator_<uchar> it, end;
+		GaussianBlur( channel[2], channel[2], Size(9, 9), 2, 2 );
+
+		for( it = channel[2].begin<uchar>(), end = channel[2].end<uchar>(); it != end; ++it)
+		{
+			(*it)=((*it)>threshold)?255:0;
+		}
+		channel[0] = Scalar(0);
+		channel[1] = Scalar(1);
+
+		vector<Vec3f> circles;
+		HoughCircles( channel[2], circles, CV_HOUGH_GRADIENT, 1, 20, 30, 10, 0, channel[2].cols/64 );
+		for( size_t i = 0; i < circles.size(); i++ )
+		{
+			Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+			int radius = cvRound(circles[i][2]);
+			// circle center
+			circle(  channel[1], center, 3, Scalar(255), -1, 8, 0 );
+			// circle outline
+			circle(  channel[1], center, radius, Scalar(255), 3, 8, 0 );
+		}
+
+		cout << "Found " << circles.size() << " circles." << endl;
+
+		Mat result;
+		merge(channel, 3, result);
+		imshow( "Display window", result );                   // Show our image inside it.
+	} while ((key=waitKey(0)) != 'q');                                          // Wait for a keystroke in the window
+
+	return 0;
 }
