@@ -1,4 +1,4 @@
-all: libTwoColorCircleMarker
+all: libTwoColorCircleMarker libTimeSyncBeacon
  
 libTwoColorCircleMarker:
 	make -C libTwoColorCircleMarker/
