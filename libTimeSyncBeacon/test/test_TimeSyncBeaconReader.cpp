@@ -45,6 +45,7 @@ int main( int argc, char** argv )
 		}
 		cout << "Threshold = " << (unsigned)threshold << endl;
 
+		unsigned theoreticalLedSize = sourceImage.cols/64;
 		Mat channel[3];
 		split(sourceImage, channel);
 		MatIterator_<uchar> it, end;
@@ -58,7 +59,23 @@ int main( int argc, char** argv )
 		channel[1] = Scalar(1);
 
 		vector<Vec3f> circles;
-		HoughCircles( channel[2], circles, CV_HOUGH_GRADIENT, 1, 20, 30, 10, 0, channel[2].cols/64 );
+		HoughCircles( channel[2], circles, CV_HOUGH_GRADIENT, 1, 20, 30, 10, 0, theoreticalLedSize );
+		Point leftmost(channel[2].cols,0), rightmost(0,0),
+				topmost(0,channel[2].rows), bottommost(0,0);
+		for (size_t i = 0; i < circles.size(); ++i) {
+			if (cvRound(circles[i][0]) < leftmost.x)
+				leftmost = Point(circles[i][0], circles[i][1]);
+			if (cvRound(circles[i][0]) > rightmost.x)
+				rightmost = Point(circles[i][0], circles[i][1]);
+			if (cvRound(circles[i][1]) < topmost.y)
+				topmost = Point(circles[i][0], circles[i][1]);
+			if (cvRound(circles[i][1]) > bottommost.y)
+				bottommost = Point(circles[i][0], circles[i][1]);
+		}
+		circle(channel[0], leftmost, 10, Scalar(255), -1, 8, 0);
+		circle(channel[0], rightmost, 10, Scalar(255), -1, 8, 0);
+		circle(channel[0], topmost, 10, Scalar(255), -1, 8, 0);
+		circle(channel[0], bottommost, 10, Scalar(255), -1, 8, 0);
 		for( size_t i = 0; i < circles.size(); i++ )
 		{
 			Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
@@ -71,9 +88,17 @@ int main( int argc, char** argv )
 
 		cout << "Found " << circles.size() << " circles." << endl;
 
+
+		//calculate bounding rect
+		Rect myROI(leftmost.x - theoreticalLedSize,
+				   topmost.y  - theoreticalLedSize,
+				   (rightmost.x-leftmost.x)+2*theoreticalLedSize,
+				   (bottommost.y-topmost.y)+2*theoreticalLedSize);
+		cout << "Bounding rect " << myROI.x << " " << myROI.y << " " <<
+				myROI.width << " " << myROI.height << endl;
 		Mat result;
 		merge(channel, 3, result);
-		imshow( "Display window", result );                   // Show our image inside it.
+		imshow( "Display window", result(myROI) );                   // Show our image inside it.
 	} while ((key=waitKey(0)) != 'q');                                          // Wait for a keystroke in the window
 
 	return 0;
