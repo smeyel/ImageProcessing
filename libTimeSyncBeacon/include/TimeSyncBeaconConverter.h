@@ -29,7 +29,7 @@ public:
 	uint8_t GetGrayHighThreshold();
 	uint8_t GetEdgeThreshold();
 
-	uint32_t GetTimeMsFromBrightness(const uint8_t brightness[64]);
+	long long GetTimeUsFromBrightness(const uint8_t brightness[64]);
 
 private:
 
@@ -39,10 +39,10 @@ private:
 	uint8_t gray_low_threshold;
 	uint8_t gray_high_threshold;
 
-	uint32_t ERROR(const char* str);
-	uint32_t RET(const char* str,  uint32_t ms);
+	long long ERROR(const char* str);
+	long long RET(const char* str,  long long us);
 
-	uint32_t binAndRunFirstToMs(uint32_t bin, int run_first);
+	long long binAndRunFirstToUs(uint32_t bin, int run_first);
 
 	uint32_t binaryToGray(uint32_t num);
 	uint32_t grayToBinary(uint32_t num);

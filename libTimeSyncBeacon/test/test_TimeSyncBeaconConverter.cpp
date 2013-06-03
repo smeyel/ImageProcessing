@@ -26,7 +26,7 @@ int main(void){
 	c.SetRunThreshold(15);
 	c.SetGrayThreshold(30, 70);
 	c.SetEdgeThreshold(80);
-	c.GetTimeMsFromBrightness(brightness);
+	c.GetTimeUsFromBrightness(brightness);
 
 	return  0;
 

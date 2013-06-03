@@ -68,7 +68,7 @@ uint8_t TimeSyncBeaconConverter::GetEdgeThreshold(){
 	return edge_threshold;
 }
 
-uint32_t TimeSyncBeaconConverter::GetTimeMsFromBrightness(const uint8_t brightness[64]){
+long long TimeSyncBeaconConverter::GetTimeUsFromBrightness(const uint8_t brightness[64]){
 
 	#if DEBUG
 	cout << "brightness = ";
@@ -251,7 +251,7 @@ uint32_t TimeSyncBeaconConverter::GetTimeMsFromBrightness(const uint8_t brightne
 	if(!turn){
 		if(gray_unstable != -1)
 			return ERROR("no turn in run, but gray has unstable");
-		return RET("no turn in run, and gray has no unstable", binAndRunFirstToMs(Kb, run_first));
+		return RET("no turn in run, and gray has no unstable", binAndRunFirstToUs(Kb, run_first));
 	}
 	
 	//turn in run
@@ -270,14 +270,14 @@ uint32_t TimeSyncBeaconConverter::GetTimeMsFromBrightness(const uint8_t brightne
 		if(run_high_count >= 2*run_low_count){
 			if(gray_unstable != -1)
 				return ERROR("turn and dominant in run (high), but gray has unstable");
-			return RET("turn and dominant in run (high), and gray has no unstable, K=begin", binAndRunFirstToMs(Kb, run_first));
+			return RET("turn and dominant in run (high), and gray has no unstable, K=begin", binAndRunFirstToUs(Kb, run_first));
 		}
 
 		//low dominant => gray is the end of the exposure
 		else if(run_low_count >= 2*run_high_count){
 			if(gray_unstable != -1)
 				return ERROR("turn and dominant in run (low), but gray has unstable");
-			return RET("turn and dominant in run (low), and gray has no unstable, K=end", binAndRunFirstToMs(Kb-1, run_first));
+			return RET("turn and dominant in run (low), and gray has no unstable, K=end", binAndRunFirstToUs(Kb-1, run_first));
 		}
 
 		//no dominant
@@ -307,9 +307,9 @@ uint32_t TimeSyncBeaconConverter::GetTimeMsFromBrightness(const uint8_t brightne
 			#endif
 
 			if(x_p & gu)
-				return RET("turn but no dominant in run, gray has the +1 unstable, K=begin", binAndRunFirstToMs(Kb, run_first));
+				return RET("turn but no dominant in run, gray has the +1 unstable, K=begin", binAndRunFirstToUs(Kb, run_first));
 			else if(x_m & gu)
-				return RET("turn but no dominant in run, gray has the -1 unstable, K=end", binAndRunFirstToMs(Kb-1, run_first));
+				return RET("turn but no dominant in run, gray has the -1 unstable, K=end", binAndRunFirstToUs(Kb-1, run_first));
 			else
 				return ERROR("turn but no dominant in run, gray has unstable, but no +1 or -1 bit");
 		}
@@ -319,7 +319,7 @@ uint32_t TimeSyncBeaconConverter::GetTimeMsFromBrightness(const uint8_t brightne
 }
 
 
-uint32_t TimeSyncBeaconConverter::ERROR(const char* str){
+long long TimeSyncBeaconConverter::ERROR(const char* str){
 	#if DEBUG
 	cout << "ERROR: " << "\"" << str << "\"" << " => " << 0 << endl;
 	#else
@@ -328,19 +328,19 @@ uint32_t TimeSyncBeaconConverter::ERROR(const char* str){
 	return 0;
 }
 
-uint32_t TimeSyncBeaconConverter::RET(const char* str,  uint32_t ms){
+long long TimeSyncBeaconConverter::RET(const char* str, long long us){
 	#if DEBUG
-	cout << "RET: " << "\"" << str << "\"" << " => " << ms << endl;
+	cout << "RET: " << "\"" << str << "\"" << " => " << us << endl;
 	#endif
-	return ms;
+	return us;
 }
 
-uint32_t TimeSyncBeaconConverter::binAndRunFirstToMs(uint32_t bin, int run_first){
-	uint32_t count = 30*bin + (uint32_t)run_first;
+long long TimeSyncBeaconConverter::binAndRunFirstToUs(uint32_t bin, int run_first){
+	long long count = 30*bin + run_first;
 	#if DEBUG
-	return count;
+	return count * 1000;
 	#else
-	return count * 1000 / 1024;	//one step is (1000/1024)ms
+	return count * 1000 * 1000 / 1024;	//one step is (1000/1024)ms
 	#endif
 }
 
