@@ -12,6 +12,8 @@ unsigned theoreticalLedSize;
 Mat channel[3];
 Point corners[4];
 vector<Vec3f> circles;
+vector<Point> LEDcenterPoints;
+const int LEDcountRow = 16;
 
 void preprocessImage()
 {
@@ -45,6 +47,9 @@ inline unsigned satSub(int a, int b)
 
 void findCorners()
 {
+	Matx21d foo;
+	foo.ones();
+	foo=foo*(double)2;
 	Point imageCorners[4];
 	imageCorners[0] = Point(0,0);
 	imageCorners[1] = Point(sourceImage.cols,0);
@@ -88,6 +93,43 @@ Rect RectangleFromCorners(Point corners[4])
 	return retval;
 }
 
+inline Matx21d PointToMatx21d(const Point &pt)
+{
+	Matx21d retval;
+	retval.val[0] = pt.x;
+	retval.val[1] = pt.y;
+	return retval;
+}
+
+inline Point Matx21dToPoint(const Matx21d &mat)
+{
+	return Point(cvRound(mat.val[0]), cvRound(mat.val[1]));
+}
+
+void GeneratePoints(Matx21d a, Matx21d b)
+{
+	for (int j = 0; j < LEDcountRow; ++j) {
+		Matx21d newPoint;
+		newPoint = a + (b-a)*((double)j/(LEDcountRow-1));
+		LEDcenterPoints.push_back(Matx21dToPoint(newPoint));
+	}
+}
+
+void GenerateLEDcenterPoints()
+{
+	Matx21d a, b, c, d;
+	//top row
+	a=PointToMatx21d(corners[0]);
+	b=PointToMatx21d(corners[1]);
+	c=PointToMatx21d(corners[2]);
+	d=PointToMatx21d(corners[3]);
+
+	GeneratePoints(a,b);
+	GeneratePoints(a+(c-a)*((double)3/31), b+(d-b)*((double)3/31));
+	GeneratePoints(a+(c-a)*((double)28/31), b+(d-b)*((double)28/31));
+	GeneratePoints(c,d);
+}
+
 int main( int argc, char** argv )
 {
 	if( argc != 2)
@@ -124,6 +166,8 @@ int main( int argc, char** argv )
 			break;
 		}
 		cout << "thres = " << (unsigned)thres << endl;
+		circles.clear();
+		LEDcenterPoints.clear();
 
 		preprocessImage();
 
@@ -144,6 +188,12 @@ int main( int argc, char** argv )
 			circle(  channel[1], center, radius, Scalar(255), 3, 8, 0 );
 		}
 
+		GenerateLEDcenterPoints();
+		channel[2] = Scalar(0);
+		for (size_t i = 0; i < LEDcenterPoints.size(); ++i) {
+			circle(channel[2], LEDcenterPoints.at(i), 3, Scalar(255), -1, 8, 0);
+		}
+
 		cout << "Found " << circles.size() << " circles." << endl;
 
 		//calculate bounding rect
@@ -156,6 +206,7 @@ int main( int argc, char** argv )
 				myROI.width << " " << myROI.height << endl;
 		Mat result;
 		merge(channel, 3, result);
+		result += sourceImage;
 		imshow( "Display window", result(myROI) );                   // Show our image inside it.
 	} while ((key=waitKey(0)) != 'q');                                          // Wait for a keystroke in the window
 
