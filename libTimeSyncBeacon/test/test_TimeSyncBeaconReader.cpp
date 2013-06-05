@@ -2,6 +2,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include "opencv2/imgproc/imgproc.hpp"
 #include <iostream>
+#include "TimeSyncBeaconConverter.h"
 
 using namespace cv;
 using namespace std;
@@ -14,6 +15,7 @@ Point corners[4];
 vector<Vec3f> circles;
 vector<Point> LEDcenterPoints;
 const int LEDcountRow = 16;
+uint8_t davidArray[64];
 
 void preprocessImage()
 {
@@ -130,6 +132,30 @@ void GenerateLEDcenterPoints()
 	GeneratePoints(c,d);
 }
 
+void CreateDavidArray()
+{
+	//Find the biggest circle
+	float maxRadius = 0;
+	for (size_t cp = 0; cp < circles.size(); ++cp)
+		if (circles[cp][2] > maxRadius) maxRadius = circles[cp][2];
+
+	bzero(davidArray, sizeof(davidArray));
+	for (size_t cp = 0; cp < circles.size(); ++cp) { //cp stands for circle center point index
+		double min = INFINITY;
+		size_t mini = (size_t)-1;
+		Point currentCirclePoint(circles[cp][0], circles[cp][1]);
+		for (size_t lp = 0; lp < LEDcenterPoints.size(); ++lp) { //lp stands for LED center point index
+			if (min > L2Distance(currentCirclePoint, LEDcenterPoints[lp])) {
+				min = L2Distance(currentCirclePoint, LEDcenterPoints[lp]);
+				mini=lp;
+			}
+		}
+		if (mini != (size_t)-1) {
+			davidArray[63-mini] = (circles[cp][2]/maxRadius)*255;
+		}
+	}
+}
+
 int main( int argc, char** argv )
 {
 	if( argc != 2)
@@ -150,6 +176,7 @@ int main( int argc, char** argv )
 	namedWindow( "Display window", CV_WINDOW_AUTOSIZE );// Create a window for display.
 
 	char key=0;
+	TimeSyncBeaconConverter tsbc(255,30,50,100,100);
 	do {
 		switch (key) {
 		case 'I':
@@ -189,6 +216,8 @@ int main( int argc, char** argv )
 		}
 
 		GenerateLEDcenterPoints();
+		CreateDavidArray();
+		tsbc.GetTimeUsFromBrightness(davidArray);
 		channel[2] = Scalar(0);
 		for (size_t i = 0; i < LEDcenterPoints.size(); ++i) {
 			circle(channel[2], LEDcenterPoints.at(i), 3, Scalar(255), -1, 8, 0);
