@@ -21,9 +21,27 @@
     <ClInclude Include="include\TimeSyncBeaconConverter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\CircleXYR.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SmartVector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TimeSyncBeaconReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\TimeSyncBeaconConverter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CircleXYR.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SmartVector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TimeSyncBeaconReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

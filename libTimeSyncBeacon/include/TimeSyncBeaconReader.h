@@ -8,6 +8,10 @@
 #ifndef TIMESYNCBEACONREADER_H_
 #define TIMESYNCBEACONREADER_H_
 
+#ifdef _WIN32
+typedef unsigned char uint8_t;
+#endif
+
 #include <opencv2/core/core.hpp>
 #include "SmartVector.h"
 #include "CircleXYR.h"

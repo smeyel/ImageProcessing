@@ -11,6 +11,10 @@
 #include <iostream>
 #endif
 
+#ifdef _WIN32
+#define INFINITY	std::numeric_limits<double>::infinity()
+#endif
+
 using namespace cv;
 
 TimeSyncBeaconReader::TimeSyncBeaconReader()
@@ -124,7 +128,11 @@ void TimeSyncBeaconReader::CreateDavidArray()
 	for (size_t cp = 0; cp < circles.size(); ++cp)
 		if (circles[cp].getR() > maxRadius) maxRadius = circles[cp].getR();
 
+#ifdef _WIN32
+	memset(davidArray, 0, sizeof(davidArray));
+#else
 	bzero(davidArray, sizeof(davidArray));
+#endif
 	for (size_t cp = 0; cp < circles.size(); ++cp) { //cp stands for circle center point index
 		double min = INFINITY;
 		size_t mini = (size_t)-1;
