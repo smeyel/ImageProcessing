@@ -14,9 +14,8 @@ CircleXYR::CircleXYR() : Vec3f()
 
 }
 
-CircleXYR::CircleXYR(const CircleXYR& theOther) : Vec3f()
+CircleXYR::CircleXYR(const CircleXYR& theOther) : Vec3f(theOther)
 {
-	CircleXYR::operator =(theOther);
 }
 
 CircleXYR::CircleXYR(const Vec3f &theOther) : Vec3f(theOther)
