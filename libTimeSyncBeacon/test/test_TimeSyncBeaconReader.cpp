@@ -51,12 +51,12 @@ int main( int argc, char** argv )
 
 		tsbc.GetTimeUsFromBrightness(tsbr.davidArray);
 
-		cout << "Bounding rect " << tsbr.myROI.x << " " << tsbr.myROI.y << " " <<
-				tsbr.myROI.width << " " << tsbr.myROI.height << endl;
+		cout << "Bounding rect " << tsbr.getBoundingRect().x << " " << tsbr.getBoundingRect().y << " " <<
+				tsbr.getBoundingRect().width << " " << tsbr.getBoundingRect().height << endl;
 		Mat result;
 		merge(tsbr.channel, 3, result);
 		result += sourceImage;
-		imshow( "Display window", result(tsbr.myROI) );                   // Show our image inside it.
+		imshow( "Display window", result(tsbr.getBoundingRect()) );                   // Show our image inside it.
 	} while ((key=waitKey(0)) != 'q');                                          // Wait for a keystroke in the window
 
 	return 0;

@@ -24,8 +24,8 @@ private:
 
 	void preprocessImage();
 	void findCorners();
-	cv::Rect RectangleFromCorners(SmartVector corners[4]);
-	void GeneratePoints(SmartVector a, SmartVector b);
+	cv::Rect RectangleFromCorners(const SmartVector corners[4]);
+	void GeneratePoints(const SmartVector &a, const SmartVector &b);
 	void GenerateLEDcenterPoints();
 	void CreateDavidArray();
 	unsigned satSub(int a, int b);
@@ -35,13 +35,15 @@ private:
 public:
 	uint8_t davidArray[64];
 	cv::Mat channel[3];
-	cv::Rect myROI;
 
 	unsigned char getTreshold();
 	void setThreshold(unsigned char thres);
 
 	TimeSyncBeaconReader();
 	void ProcessImage(cv::Mat srcImg);
+	void GenerateImage();
+	cv::Rect getBoundingRect();
+
 };
 
 

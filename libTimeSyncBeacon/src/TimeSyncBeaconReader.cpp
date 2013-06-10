@@ -38,9 +38,9 @@ unsigned TimeSyncBeaconReader::satSub(int a, int b)
 void TimeSyncBeaconReader::preprocessImage()
 {
 	split(sourceImage, channel);
-	MatIterator_<uchar> it, end;
 	GaussianBlur( channel[2], channel[2], Size(9, 9), 2, 2 );
 
+	MatIterator_<uchar> it, end;
 	for( it = channel[2].begin<uchar>(), end = channel[2].end<uchar>(); it != end; ++it)
 	{
 		(*it)=((*it)>thres)?255:0;
@@ -52,11 +52,11 @@ void TimeSyncBeaconReader::preprocessImage()
 
 void TimeSyncBeaconReader::findCorners()
 {
-	SmartVector imageCorners[4];
-	imageCorners[0] = Point(0,0);
-	imageCorners[1] = Point(sourceImage.cols,0);
-	imageCorners[2] = Point(0, sourceImage.rows);
-	imageCorners[3] = Point(sourceImage.cols, sourceImage.rows);
+	const SmartVector imageCorners[4] = { 	Point(0,0),
+											Point(sourceImage.cols,0),
+											Point(0, sourceImage.rows),
+											Point(sourceImage.cols, sourceImage.rows)
+	};
 
 	corners[0] = corners[1] = corners[2] = corners[3] = circles[0].getCenterPoint();
 	for (size_t i = 1; i < circles.size(); ++i) {
@@ -70,15 +70,15 @@ void TimeSyncBeaconReader::findCorners()
 }
 
 
-Rect TimeSyncBeaconReader::RectangleFromCorners(SmartVector corners[4])
+Rect TimeSyncBeaconReader::RectangleFromCorners(const SmartVector corners[4])
 {
 	int x1,y1,x2,y2;
-	x1=x2=corners[0].val[0];
-	y1=y2=corners[0].val[1];
+	x1=x2=cvRound(corners[0].getX());
+	y1=y2=cvRound(corners[0].getY());
 
 	for (size_t i = 1; i<4; ++i) {
-		int x=corners[i].val[0];
-		int y=corners[i].val[1];
+		int x=cvRound(corners[i].getX());
+		int y=cvRound(corners[i].getY());
 
 		if (x < x1) x1 = x;
 		else if (x > x2) x2 = x;
@@ -95,7 +95,7 @@ Rect TimeSyncBeaconReader::RectangleFromCorners(SmartVector corners[4])
 	return retval;
 }
 
-void TimeSyncBeaconReader::GeneratePoints(SmartVector a, SmartVector b)
+void TimeSyncBeaconReader::GeneratePoints(const SmartVector &a, const SmartVector &b)
 {
 	for (int j = 0; j < LEDcountRow; ++j) {
 		SmartVector newPoint;
@@ -158,6 +158,25 @@ void TimeSyncBeaconReader::ProcessImage(cv::Mat srcImg)
 		circles.push_back(tmpCircles[i]);
 	}
 	findCorners();
+
+	GenerateLEDcenterPoints();
+	CreateDavidArray();
+}
+
+
+cv::Rect TimeSyncBeaconReader::getBoundingRect()
+{
+	Rect myROI;
+	myROI = RectangleFromCorners(corners);
+	myROI.x = satSub(myROI.x, 20);
+	myROI.y = satSub(myROI.y, 20);
+	myROI.width += 40;
+	myROI.height += 40;
+	return myROI;
+}
+
+void TimeSyncBeaconReader::GenerateImage()
+{
 	for (size_t i = 0; i < 4; ++i) {
 		circle(channel[0], corners[i].toPoint(), 10, Scalar(255), -1, 8, 0);
 	}
@@ -171,18 +190,10 @@ void TimeSyncBeaconReader::ProcessImage(cv::Mat srcImg)
 		// circle outline
 		circle(  channel[1], center, radius, Scalar(255), 3, 8, 0 );
 	}
-
-	GenerateLEDcenterPoints();
-	CreateDavidArray();
 	channel[2] = Scalar(0);
 	for (size_t i = 0; i < LEDcenterPoints.size(); ++i) {
 		circle(channel[2], LEDcenterPoints.at(i).toPoint(), 3, Scalar(255), -1, 8, 0);
 	}
-	//calculate bounding rect
-	myROI = RectangleFromCorners(corners);
-	myROI.x = satSub(myROI.x, 20);
-	myROI.y = satSub(myROI.y, 20);
-	myROI.width += 40;
-	myROI.height += 40;
+
 }
 

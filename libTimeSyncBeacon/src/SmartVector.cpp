@@ -82,3 +82,13 @@ double SmartVector::distance(const SmartVector& theOther, double pnorm) const
 	}
 	return pow(absSumPower, 1/pnorm);
 }
+
+double SmartVector::getX() const
+{
+	return this->val[0];
+}
+
+double SmartVector::getY() const
+{
+	return this->val[1];
+}

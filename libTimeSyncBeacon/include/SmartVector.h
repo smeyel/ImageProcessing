@@ -26,6 +26,8 @@ public:
 	cv::Point toPoint() const;
 
 	double distance(const SmartVector& theOther, double pnorm = 1) const;
+	double getX() const;
+	double getY() const;
 };
 
 
