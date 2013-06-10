@@ -11,14 +11,14 @@ all: testConverter testReader
 
 
 TESTCONVERTER_OBJECTS = test_TimeSyncBeaconConverter.o ../libTimeSyncBeacon.a
-TEST_OBJECTS =  test_TimeSyncBeaconReader.o
+TESTREADER_OBJECTS =  test_TimeSyncBeaconReader.o ../libTimeSyncBeacon.a
 
 
 testConverter: $(TESTCONVERTER_OBJECTS)
 	$(CC) -o testConverter $(TESTCONVERTER_OBJECTS) $(LDFLAGS)
 
-testReader: $(TEST_OBJECTS)
-	$(CC) -o testReader $(TEST_OBJECTS) $(LDFLAGS)
+testReader: $(TESTREADER_OBJECTS)
+	$(CC) -o testReader $(TESTREADER_OBJECTS) $(LDFLAGS)
 
 .cpp.o:
 	$(CC) $(CFLAGS) $< -o $@
