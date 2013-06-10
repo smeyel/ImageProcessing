@@ -1,8 +1,6 @@
 
 #include "TimeSyncBeaconConverter.h"
 
-#define DEBUG	1
-
 #if DEBUG
 #include <iostream>
 #include <iomanip>
