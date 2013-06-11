@@ -137,8 +137,8 @@ void MarkerCC2::scanEllipses(Mat &srcCC)
 {
 	// The center of the marker is the mean of the ellipse centers
 	Point markerCenter = Point(
-		(innerEllipse.center.x + outerEllipse.center.x) / 2.0,
-		(innerEllipse.center.y + outerEllipse.center.y) / 2.0);
+		(int)((innerEllipse.center.x + outerEllipse.center.x) / 2.0),
+		(int)((innerEllipse.center.y + outerEllipse.center.y) / 2.0));
 
 	// TODO: now using the angle of the inner ellipse only. Should be more
 	//	rebust by using the mean direction (have to handle the wrap-around)!
@@ -165,7 +165,7 @@ void MarkerCC2::scanEllipses(Mat &srcCC)
 
 float MarkerCC2::bitIdx2Angle(int bitIdx)
 {
-	return (float)bitIdx * 11.25;
+	return (float)bitIdx * 11.25F;
 }
 
 // srcCC is only used to check wether location is inside the image
@@ -174,8 +174,8 @@ Point MarkerCC2::getEllipsePointInDirection(RotatedRect baseEllipse,float direct
 	// TODO: this takes lots of time now...
 
 	// Calculating distance from origin based on an unrotated ellipse
-	float x = baseEllipse.size.width/2 * sin( directionAngle /180.0*CV_PI );
-	float y = baseEllipse.size.height/2 * cos( directionAngle /180.0*CV_PI );
+	float x = baseEllipse.size.width/2 * (float)sin( directionAngle /180.0F*CV_PI );
+	float y = baseEllipse.size.height/2 * (float)cos( directionAngle /180.0F*CV_PI );
 	float distance = sqrt( x*x + y*y ) * distanceMultiplier;
 
 	// Angle is in degrees, starting from north and increasing clockwise.
@@ -195,7 +195,7 @@ Point MarkerCC2::getEllipsePointInDirection(RotatedRect baseEllipse,float direct
 // Return: false for immediate reject, True: may be valid marker...
 bool MarkerCC2::findBordersAlongLine(Mat &srcCC, int dir)
 {
-	CvPoint endpoint = getEndPoint(center.x, center.y, scanDistance, dir);
+	CvPoint endpoint = getEndPoint((int)(center.x), (int)(center.y), scanDistance, dir);
 	
 	// Meanwhile, also find inner and outer borders of RED area
 	// Fills RedInnerBorders[dir] and RedOuterBorders[]
