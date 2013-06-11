@@ -20,7 +20,7 @@ class LutColor
 		float dR = (float)(Rmax-Rmin)/(float)(this->stepsPerChannel);
 		float dG = (float)(Gmax-Gmin)/(float)(this->stepsPerChannel);
 		float dB = (float)(Bmax-Bmin)/(float)(this->stepsPerChannel);
-		for(int step=0; step<this->stepsPerChannel; step++)
+		for(unsigned int step=0; step<this->stepsPerChannel; step++)
 		{
 			rValues[step] = (int)(Rmin + dR*(float)step);
 			gValues[step] = (int)(Gmin + dG*(float)step);
@@ -111,10 +111,10 @@ public:
 			for(unsigned int col=0; col<5; col++)
 			{
 				Rect subRect;
-				subRect.x = targetArea.x + (col+1.0F)*subAreaSize.width;
-				subRect.y = targetArea.y + (row+1.0F)*subAreaSize.height;
-				subRect.width = subAreaSize.width;
-				subRect.height = subAreaSize.height;
+				subRect.x = targetArea.x + (int)((col+1.0F)*subAreaSize.width);
+				subRect.y = targetArea.y + (int)((row+1.0F)*subAreaSize.height);
+				subRect.width = (int)subAreaSize.width;
+				subRect.height = (int)subAreaSize.height;
 				rectangle(img,subRect,getColorForIdx(row,col),CV_FILLED);
 			}
 		}
@@ -125,9 +125,9 @@ public:
 		assert(img.type()==CV_8UC3);
 		// Go along every pixel and adjust minimal and maximal values accordingly
 		// TODO: what about quantizing gaps causing holes in the LUT?
-		for(unsigned int row=targetArea.y; row<targetArea.y+targetArea.height; row++)
+		for(int row=targetArea.y; row<targetArea.y+targetArea.height; row++)
 		{
-			for(unsigned int col=targetArea.x; col<targetArea.x+targetArea.width; col++)
+			for(int col=targetArea.x; col<targetArea.x+targetArea.width; col++)
 			{
 				// BGR image
 				unsigned char r = img.at<uchar>(row,col,2);
@@ -178,9 +178,9 @@ public:
 		// Draw markers
 		for(int i=0; i<3; i++)
 		{
-			Point2f leftCircleCenter(sizeFactor/2.0,sizeFactor*i*5+sizeFactor/2.0);
+			Point2f leftCircleCenter(sizeFactor/2.0F,sizeFactor*i*5+sizeFactor/2.0F);
 			circle(img,leftCircleCenter,sizeFactor/2,MarkerColor,CV_FILLED);
-			Point2f rightCircleCenter(13*sizeFactor+sizeFactor/2.0,sizeFactor*i*5+sizeFactor/2.0);
+			Point2f rightCircleCenter(13*sizeFactor+sizeFactor/2.0F,sizeFactor*i*5+sizeFactor/2.0F);
 			circle(img,rightCircleCenter,sizeFactor/2,MarkerColor,CV_FILLED);
 		}
 
