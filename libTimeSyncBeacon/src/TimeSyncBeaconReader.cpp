@@ -149,7 +149,7 @@ void TimeSyncBeaconReader::CreateDavidArray()
 	}
 }
 
-void TimeSyncBeaconReader::ProcessImage(cv::Mat srcImg)
+void TimeSyncBeaconReader::ProcessImage(const cv::Mat &srcImg)
 {
 	sourceImage = srcImg;
 	circles.clear();
