@@ -9,7 +9,7 @@
 TimeSyncBeacon::TimeSyncBeacon()
 {
 	this->tsbr = new TimeSyncBeaconReader();
-	tsbr->setThreshold(100);
+	tsbr->setThreshold(220);
 	this->tsbc = new TimeSyncBeaconConverter(255,10,10,100,10);
 }
 

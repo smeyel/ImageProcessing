@@ -14,6 +14,7 @@
 
 class TimeSyncBeacon {
 private:
+public:	// TEMP
 	TimeSyncBeaconReader* tsbr;
 	TimeSyncBeaconConverter* tsbc;
 public:

@@ -42,7 +42,7 @@ unsigned TimeSyncBeaconReader::satSub(int a, int b)
 void TimeSyncBeaconReader::preprocessImage()
 {
 	split(sourceImage, channel);
-	GaussianBlur( channel[2], channel[2], Size(9, 9), 2, 2 );
+	//GaussianBlur( channel[2], channel[2], Size(9, 9), 2, 2 );
 
 	MatIterator_<uchar> it, end;
 	for( it = channel[2].begin<uchar>(), end = channel[2].end<uchar>(); it != end; ++it)
@@ -62,6 +62,15 @@ void TimeSyncBeaconReader::findCorners()
 											Point(sourceImage.cols, sourceImage.rows)
 	};
 
+	// TODO: when circle[0] does not exist, it causes assertion fail...
+	if (circles.size()==0)
+	{
+		corners[0] = imageCorners[0];
+		corners[1] = imageCorners[1];
+		corners[2] = imageCorners[2];
+		corners[3] = imageCorners[3];
+		return;
+	}
 	corners[0] = corners[1] = corners[2] = corners[3] = circles[0].getCenterPoint();
 	for (size_t i = 1; i < circles.size(); ++i) {
 		SmartVector currentPoint = circles[i].getCenterPoint();
@@ -154,11 +163,11 @@ void TimeSyncBeaconReader::ProcessImage(const cv::Mat &srcImg)
 	sourceImage = srcImg;
 	circles.clear();
 	LEDcenterPoints.clear();
-	theoreticalLedSize = sourceImage.cols/64;
+	theoreticalLedSize = sourceImage.cols/32;
 
 	preprocessImage();
 	vector<Vec3f> tmpCircles;
-	HoughCircles( channel[2], tmpCircles, CV_HOUGH_GRADIENT, 1, 20, 30, 10, 0, theoreticalLedSize );
+	HoughCircles( channel[2], tmpCircles, CV_HOUGH_GRADIENT, 1, 20, 30, 7, 0, theoreticalLedSize );
 #ifdef DEBUG
 	std::cout << "DEBUG Found " << tmpCircles.size() << " circles." << std::endl;
 #endif
@@ -197,6 +206,8 @@ void TimeSyncBeaconReader::GenerateImage()
 		circle(  channel[1], center, 3, Scalar(255), -1, 8, 0 );
 		// circle outline
 		circle(  channel[1], center, radius, Scalar(255), 3, 8, 0 );
+		circle(  channel[0], center, radius, Scalar(0), 3, 8, 0 );
+		circle(  channel[2], center, radius, Scalar(0), 3, 8, 0 );
 	}
 	channel[2] = Scalar(0);
 	for (size_t i = 0; i < LEDcenterPoints.size(); ++i) {
