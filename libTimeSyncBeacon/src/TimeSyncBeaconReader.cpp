@@ -144,7 +144,7 @@ void TimeSyncBeaconReader::CreateDavidArray()
 			}
 		}
 		if (mini != (size_t)-1) {
-			davidArray[63-mini] = (circles[cp].getR()/maxRadius)*255;
+			davidArray[63-mini] = (unsigned int)((circles[cp].getR()/maxRadius)*255);
 		}
 	}
 }

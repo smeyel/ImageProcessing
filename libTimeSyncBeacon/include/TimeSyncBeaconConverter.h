@@ -39,7 +39,7 @@ private:
 	uint8_t gray_low_threshold;
 	uint8_t gray_high_threshold;
 
-	long long ERROR(const char* str);
+	long long _ERROR(const char* str);
 	long long RET(const char* str,  long long us);
 
 	long long binAndRunFirstToUs(uint32_t bin, int run_first);

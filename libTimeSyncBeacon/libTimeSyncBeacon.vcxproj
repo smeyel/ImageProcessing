@@ -78,12 +78,14 @@
   <ItemGroup>
     <ClInclude Include="include\CircleXYR.h" />
     <ClInclude Include="include\SmartVector.h" />
+    <ClInclude Include="include\TimeSyncBeacon.h" />
     <ClInclude Include="include\TimeSyncBeaconConverter.h" />
     <ClInclude Include="include\TimeSyncBeaconReader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\CircleXYR.cpp" />
     <ClCompile Include="src\SmartVector.cpp" />
+    <ClCompile Include="src\TimeSyncBeacon.cpp" />
     <ClCompile Include="src\TimeSyncBeaconConverter.cpp" />
     <ClCompile Include="src\TimeSyncBeaconReader.cpp" />
   </ItemGroup>
