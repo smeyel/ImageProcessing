@@ -18,20 +18,23 @@ namespace smeyel
 		SequenceCounterTreeNode **children;
 		SequenceCounterTreeNode *parent;
 		int inputValueNumber;
-		float counter[MAXNODECOUNTERNUM];
+		int counter[MAXNODECOUNTERNUM];
 
 		void writeIndent(int indent);
 	public:
+		unsigned char auxScore;	// May be used freely...
 
 		SequenceCounterTreeNode(const int inputValueNumber, SequenceCounterTreeNode* parentNode);
 		~SequenceCounterTreeNode();
-		SequenceCounterTreeNode *getChildNode(const unsigned int inputValue);
+		SequenceCounterTreeNode *getChildNode(const unsigned int inputValue, bool createIfNotPresent=false);
 		SequenceCounterTreeNode *getParentNode();
+
+		int getInputValueForChild(SequenceCounterTreeNode *child);
 
 		/**
 			Nodes are created on demand, return value is never NULL.
 		*/
-		SequenceCounterTreeNode *getNode(const unsigned int *inputValues, const int numberOfValues);
+		SequenceCounterTreeNode *getNode(const unsigned int *inputValues, const int numberOfValues, bool createIfNotExisting);
 
 		void incrementCounter(int counterIdx);
 
@@ -41,8 +44,6 @@ namespace smeyel
 
 		/** Overwrites counter of current node with sum of children, except if there are no children (or sum is 0). */
 		int getAndStoreSubtreeSumCounter(int counterIdx);
-
-		void divAllCounters(int counterIdx, float divider);
 
 		void showRecursive(int indent, int maxCounterIdx, bool showNullChildren);
 

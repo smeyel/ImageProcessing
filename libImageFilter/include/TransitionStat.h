@@ -47,6 +47,8 @@ namespace smeyel
 			@param	isTargetArea	Shows whether the current element is inside a target area or not.
 		*/
 		void addValue(const unsigned int inputValue, const bool isTargetArea);
+
+		unsigned char getScoreForValue(const unsigned int inputValue);
 	};
 }
 

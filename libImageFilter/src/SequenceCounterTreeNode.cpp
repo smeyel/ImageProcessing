@@ -30,9 +30,10 @@ SequenceCounterTreeNode::~SequenceCounterTreeNode()
 	}
 }
 
-SequenceCounterTreeNode *SequenceCounterTreeNode::getChildNode(const unsigned int inputValue)
+SequenceCounterTreeNode *SequenceCounterTreeNode::getChildNode(const unsigned int inputValue, bool createIfNotPresent)
 {
-	if (children[inputValue] == NULL)
+	OPENCV_ASSERT(inputValue<(unsigned int)inputValueNumber,"SequenceCounterTreeNode.getChildNode","Input value is too high!");
+	if (children[inputValue] == NULL && createIfNotPresent)
 	{
 		children[inputValue] = new SequenceCounterTreeNode(inputValueNumber,this);
 	}
@@ -44,10 +45,22 @@ SequenceCounterTreeNode *SequenceCounterTreeNode::getParentNode()
 	return this->parent;
 }
 
+int SequenceCounterTreeNode::getInputValueForChild(SequenceCounterTreeNode *child)
+{
+	for(int i=0; i<inputValueNumber; i++)
+	{
+		if (children[i]==child)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
 /**
-	Nodes are created on demand, return value is never NULL.
+	Nodes are created on demand if createIfNotExisting.
 */
-SequenceCounterTreeNode *SequenceCounterTreeNode::getNode(const unsigned int *inputValues, const int numberOfValues)
+SequenceCounterTreeNode *SequenceCounterTreeNode::getNode(const unsigned int *inputValues, const int numberOfValues, bool createIfNotExisting)
 {
 	if (numberOfValues == 0)
 	{
@@ -55,11 +68,11 @@ SequenceCounterTreeNode *SequenceCounterTreeNode::getNode(const unsigned int *in
 	}
 	if (numberOfValues == 1)
 	{
-		// Return direct child node (may be NULL)
-		return getChildNode(*inputValues);
+		// Return direct child node
+		return getChildNode(*inputValues,createIfNotExisting);
 	}
 	// Recursive call
-	return getChildNode(*inputValues)->getNode(inputValues+1,numberOfValues-1);
+	return getChildNode(*inputValues,createIfNotExisting)->getNode(inputValues+1,numberOfValues-1,createIfNotExisting);
 }
 
 void SequenceCounterTreeNode::incrementCounter(int counterIdx)
@@ -115,22 +128,6 @@ int SequenceCounterTreeNode::getAndStoreSubtreeSumCounter(int counterIdx)
 
 	return counter[counterIdx];
 }
-
-void SequenceCounterTreeNode::divAllCounters(int counterIdx, float divider)
-{
-	OPENCV_ASSERT(counterIdx<MAXNODECOUNTERNUM,"SequenceCounterTreeNode.divAllCounters","Counter IDX > max!");
-	OPENCV_ASSERT(counterIdx>=0,"SequenceCounterTreeNode.divAllCounters","Counter IDX negative!");
-
-	counter[counterIdx] /= divider;
-	for(int i=0; i<inputValueNumber; i++)
-	{
-		if (children[i]!=NULL)
-		{
-			children[i]->divAllCounters(counterIdx, divider);
-		}
-	}
-}
-
 
 void SequenceCounterTreeNode::writeIndent(int indent)
 {

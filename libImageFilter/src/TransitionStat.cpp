@@ -45,9 +45,28 @@ void TransitionStat::addValue(const unsigned int inputValue, const bool isTarget
 	if (valueNumberSinceSequenceStart>=markovChainOrder)
 	{
 		SequenceCounterTreeNode *node = NULL;
-		node = counterTreeRoot->getNode(lastValues,markovChainOrder);
+		node = counterTreeRoot->getNode(lastValues,markovChainOrder,true);
 
 		// Increment respective counter
 		node->incrementCounter(isTargetArea ? COUNTERIDX_ON : COUNTERIDX_OFF);
 	}
+}
+
+unsigned char TransitionStat::getScoreForValue(const unsigned int inputValue)
+{
+	OPENCV_ASSERT(inputValue<inputValueNumber,"TransitionStat.getScoreForValue","value > max!");
+	// Update history (lastValues)
+	for(unsigned int i=0; i<markovChainOrder-1; i++)
+		lastValues[i]=lastValues[i+1];
+	lastValues[markovChainOrder-1] = inputValue;
+
+	SequenceCounterTreeNode *node = NULL;
+	node = counterTreeRoot->getNode(lastValues,markovChainOrder,false);
+
+	// Increment respective counter
+	if (node)
+	{
+		return node->auxScore;
+	}
+	return 0;
 }
