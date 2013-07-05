@@ -4,6 +4,11 @@
 
 #include "SequenceCounterTreeNode.h"
 
+using namespace smeyel;
+
+// Type of callback for promising nodes
+typedef void (*notifycallbackPtr)(SequenceCounterTreeNode *node, float precision);
+
 #define COUNTERIDX_ON		1
 #define COUNTERIDX_OFF		0
 
@@ -49,6 +54,24 @@ namespace smeyel
 		void addValue(const unsigned int inputValue, const bool isTargetArea);
 
 		unsigned char getScoreForValue(const unsigned int inputValue);
+
+		// Higher level functions
+	private:
+		unsigned char lastValue;
+		bool lastIsTargetArea;
+		int runLength;
+		unsigned char lastScore;
+		void addRunLengthQuantizedValue(unsigned char value, bool isTargetArea);
+		unsigned char getScoreForRunLengthQuantizedValue(unsigned char value);
+		void checkNode(SequenceCounterTreeNode *node, float sumOn, float sumOff, int maxInputValue, notifycallbackPtr callback);
+
+	public:
+		void addImage(cv::Mat &image, bool isOn);
+		void getScoreMaskForImage(cv::Mat &src, cv::Mat &dst);
+
+		float trainMinPrecision;
+		int trainMinSampleNum;
+		void findClassifierSequences(notifycallbackPtr callback);
 	};
 }
 
