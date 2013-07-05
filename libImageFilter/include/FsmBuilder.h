@@ -35,6 +35,9 @@ public:
 
 	void init(int maxStateNumber, int maxInputNumber, int defaultNextState=0);
 
+	// -------- Low level functions, consider using high level functions instead...
+
+
 	/** Set an element of the transition matrix */
 	void setNextState(unsigned int currentState, unsigned int currentInput, unsigned int nextState);
 

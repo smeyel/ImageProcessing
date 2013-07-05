@@ -8,7 +8,20 @@
 
 namespace smeyel
 {
-	/**
+	/** LutFsmLocator may be used to find detection areas using FSM, and then generate a LUT image
+		inside the detection bounding boxes.
+		(For performance reasons, FSM execution uses the LUT, but does not create an image of it.
+		That is only done for the detection areas.)
+		
+		For monitoring purposes, the following functions are provided:
+		- verboseFsmState: visualize FSM state for every pixel
+		- verboseLutImage: visualize LUT results
+		- cleanVerboseImage: if false, verboseLutImage is not reset before new frames.
+			(This leaves currently untouched areas preserve previous content.)
+		- showBoundingBoxesOnSrc: shows bounding boxes on the source image
+		- overrideFullLut: perform full LUT for every pixel of LutImage,
+			not only inside the boundig boxes.
+
 		@warning: state and lut visualization (InverseLUT) share the same colorcode space!
 	*/
 	class LutFsmLocator : protected FsmColorFilter
@@ -16,11 +29,6 @@ namespace smeyel
 	private:
 		// Used internally by processImage. Recycled for successive frames.
 		std::vector<cv::Rect> bbVector;
-		// Used by processImage to store temporal FSM state image before InverseLUT-ing it.
-		cv::Mat *fsmStateImage;
-		// Used by processImage, LUT image for areas of bounding boxes
-		// Created based on first processed frame.
-		cv::Mat *lutImage;
 
 	protected:
 		/** Applies a given FsmBuilder */
@@ -35,6 +43,13 @@ namespace smeyel
 		*/
 		virtual void processSingleBoundingBox(cv::Rect &boundingBox, cv::Mat &lutImage, cv::Mat &originalImage) { }
 	public:
+		// Used by processImage to store temporal FSM state image before InverseLUT-ing it.
+		cv::Mat *fsmStateImage;
+
+		// Used by processImage, LUT image for areas of bounding boxes
+		// Created based on first processed frame.
+		cv::Mat *lutImage;
+
 		cv::Mat *verboseFsmState;
 		cv::Mat *verboseLutImage;
 
