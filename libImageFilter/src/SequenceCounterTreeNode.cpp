@@ -17,6 +17,7 @@ SequenceCounterTreeNode::SequenceCounterTreeNode(const int inputValueNumber, Seq
 		counter[i]=0;
 	}
 	this->inputValueNumber = inputValueNumber;
+	auxScore = 0;
 }
 
 SequenceCounterTreeNode::~SequenceCounterTreeNode()
@@ -72,7 +73,12 @@ SequenceCounterTreeNode *SequenceCounterTreeNode::getNode(const unsigned int *in
 		return getChildNode(*inputValues,createIfNotExisting);
 	}
 	// Recursive call
-	return getChildNode(*inputValues,createIfNotExisting)->getNode(inputValues+1,numberOfValues-1,createIfNotExisting);
+	SequenceCounterTreeNode *child = getChildNode(*inputValues,createIfNotExisting);
+	if (child)
+	{
+		return child->getNode(inputValues+1,numberOfValues-1,createIfNotExisting);
+	}
+	return NULL;
 }
 
 void SequenceCounterTreeNode::incrementCounter(int counterIdx)
