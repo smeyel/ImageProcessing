@@ -116,6 +116,22 @@ int SequenceCounterTreeNode::getAndStoreSubtreeSumCounter(int counterIdx)
 	return counter[counterIdx];
 }
 
+void SequenceCounterTreeNode::divAllCounters(int counterIdx, float divider)
+{
+	OPENCV_ASSERT(counterIdx<MAXNODECOUNTERNUM,"SequenceCounterTreeNode.divAllCounters","Counter IDX > max!");
+	OPENCV_ASSERT(counterIdx>=0,"SequenceCounterTreeNode.divAllCounters","Counter IDX negative!");
+
+	counter[counterIdx] /= divider;
+	for(int i=0; i<inputValueNumber; i++)
+	{
+		if (children[i]!=NULL)
+		{
+			children[i]->divAllCounters(counterIdx, divider);
+		}
+	}
+}
+
+
 void SequenceCounterTreeNode::writeIndent(int indent)
 {
 	for(int i=0; i<indent; i++)

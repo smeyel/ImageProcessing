@@ -18,7 +18,7 @@ namespace smeyel
 		SequenceCounterTreeNode **children;
 		SequenceCounterTreeNode *parent;
 		int inputValueNumber;
-		int counter[MAXNODECOUNTERNUM];
+		float counter[MAXNODECOUNTERNUM];
 
 		void writeIndent(int indent);
 	public:
@@ -41,6 +41,8 @@ namespace smeyel
 
 		/** Overwrites counter of current node with sum of children, except if there are no children (or sum is 0). */
 		int getAndStoreSubtreeSumCounter(int counterIdx);
+
+		void divAllCounters(int counterIdx, float divider);
 
 		void showRecursive(int indent, int maxCounterIdx, bool showNullChildren);
 
