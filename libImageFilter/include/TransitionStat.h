@@ -9,8 +9,8 @@ using namespace smeyel;
 // Type of callback for promising nodes
 typedef void (*notifycallbackPtr)(SequenceCounterTreeNode *node, float precision);
 
-#define COUNTERIDX_ON		1
-#define COUNTERIDX_OFF		0
+#define COUNTERIDX_ON		0
+#define COUNTERIDX_OFF		1
 
 namespace smeyel
 {
@@ -72,6 +72,26 @@ namespace smeyel
 		float trainMinPrecision;
 		int trainMinSampleNum;
 		void findClassifierSequences(notifycallbackPtr callback);
+
+		// Tree tidy-up functions
+		// returns change of number of recognized sequences if the two nodes are merged. minPrecision must be preserved
+		//	in every case where it was above the threshold originally.
+	private:
+		// used by checkCanCombineNodes
+		float getNodePrecision(SequenceCounterTreeNode *nodeA);
+		// used by checkCanCombineNodes
+		float getCombinedPrecision(SequenceCounterTreeNode *nodeA, SequenceCounterTreeNode *nodeB);
+
+	public:
+		// used by optimizeGraph
+		bool checkCanCombineNodes(SequenceCounterTreeNode *nodeA, SequenceCounterTreeNode *nodeB,
+			float minPrecision, bool hasHighPrecisionParent=false);
+		// wrapper to SequenceCounterTreeNode::combineNodes
+		// used by optimizeGraph
+		void combineNodes(SequenceCounterTreeNode *nodeA, SequenceCounterTreeNode *nodeB);
+
+		void optimizeGraph();
+
 	};
 }
 

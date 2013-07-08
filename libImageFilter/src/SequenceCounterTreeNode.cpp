@@ -4,20 +4,24 @@
 using namespace std;
 using namespace smeyel;
 
-SequenceCounterTreeNode::SequenceCounterTreeNode(const int inputValueNumber, SequenceCounterTreeNode* parentNode)
+int SequenceCounterTreeNode::nextFreeNodeID = 0;
+
+SequenceCounterTreeNode::SequenceCounterTreeNode(const int inputValueNumber)
 {
 	children = new SequenceCounterTreeNode*[inputValueNumber];
 	for(int i=0; i<inputValueNumber; i++)
 	{
 		children[i]=NULL;
 	}
-	parent=parentNode;
 	for(int i=0; i<MAXNODECOUNTERNUM; i++)
 	{
 		counter[i]=0;
 	}
 	this->inputValueNumber = inputValueNumber;
 	auxScore = 0;
+
+	nodeID = nextFreeNodeID;
+	nextFreeNodeID++;
 }
 
 SequenceCounterTreeNode::~SequenceCounterTreeNode()
@@ -36,14 +40,9 @@ SequenceCounterTreeNode *SequenceCounterTreeNode::getChildNode(const unsigned in
 	OPENCV_ASSERT(inputValue<(unsigned int)inputValueNumber,"SequenceCounterTreeNode.getChildNode","Input value is too high!");
 	if (children[inputValue] == NULL && createIfNotPresent)
 	{
-		children[inputValue] = new SequenceCounterTreeNode(inputValueNumber,this);
+		children[inputValue] = new SequenceCounterTreeNode(inputValueNumber);
 	}
 	return children[inputValue];
-}
-
-SequenceCounterTreeNode *SequenceCounterTreeNode::getParentNode()
-{
-	return this->parent;
 }
 
 int SequenceCounterTreeNode::getInputValueForChild(SequenceCounterTreeNode *child)
@@ -112,7 +111,7 @@ int SequenceCounterTreeNode::getSubtreeSumCounter(int counterIdx)
 }
 
 /** Overwrites counter of current node with sum of children, except if there are no children (or sum is 0). */
-int SequenceCounterTreeNode::getAndStoreSubtreeSumCounter(int counterIdx)
+int SequenceCounterTreeNode::calculateSubtreeCounters(int counterIdx)
 {
 	OPENCV_ASSERT(counterIdx<MAXNODECOUNTERNUM,"SequenceCounterTreeNode.getAndStoreSubtreeSumCounter","Counter IDX > max!");
 	OPENCV_ASSERT(counterIdx>=0,"SequenceCounterTreeNode.getAndStoreSubtreeSumCounter","Counter IDX negative!");
@@ -123,7 +122,7 @@ int SequenceCounterTreeNode::getAndStoreSubtreeSumCounter(int counterIdx)
 		// Cannot use getChildNode() as that would create non-existing nodes infinite long...
 		if (children[i]!=NULL)
 		{
-			childrenSum += children[i]->getAndStoreSubtreeSumCounter(counterIdx);
+			childrenSum += children[i]->calculateSubtreeCounters(counterIdx);
 		}
 	}
 
@@ -172,7 +171,7 @@ void SequenceCounterTreeNode::showRecursive(int indent, int maxCounterIdx, bool 
 	}
 }
 
-void SequenceCounterTreeNode::showCompactRecursive(int indent, int maxCounterIdx)
+void SequenceCounterTreeNode::showCompactRecursive(int indent, int maxCounterIdx, vector<string> *inputValueNames)
 {
 	OPENCV_ASSERT(maxCounterIdx<MAXNODECOUNTERNUM,"SequenceCounterTreeNode.showCompactRecursive","Max counter IDX > max!");
 	OPENCV_ASSERT(maxCounterIdx>=0,"SequenceCounterTreeNode.showCompactRecursive","Max counter IDX negative!");
@@ -184,15 +183,118 @@ void SequenceCounterTreeNode::showCompactRecursive(int indent, int maxCounterIdx
 			cout << "/";
 		}
 	}
-	cout << endl;
+	cout << "(NodeID="<<nodeID<<")" << endl;
 	// show children
 	for(int i=0; i<inputValueNumber; i++)
 	{
 		if (children[i])
 		{
 			writeIndent(indent);
-			cout << i << ": ";
-			children[i]->showCompactRecursive(indent+1,maxCounterIdx);
+			if (inputValueNames)
+			{
+				cout << (*inputValueNames)[i];
+			}
+			else
+			{
+				cout << i;
+			}
+			cout << ": ";
+
+			children[i]->showCompactRecursive(indent+1,maxCounterIdx,inputValueNames);
 		}
 	}
+}
+
+void SequenceCounterTreeNode::replaceChildPointer(SequenceCounterTreeNode *oldNode, SequenceCounterTreeNode *newNode)
+{
+	for(int i=0; i<inputValueNumber; i++)
+	{
+		if (children[i] == oldNode)
+		{
+			children[i] = newNode;
+		}
+	}
+}
+
+void SequenceCounterTreeNode::redirectParents(SequenceCounterTreeNode *startNode,SequenceCounterTreeNode *oldNode,SequenceCounterTreeNode *newNode)
+{
+	if (startNode==NULL)
+	{
+		return;	// nothing to do...
+	}
+	// Redirect children (before modifying children pointers!) and this node
+	for(int i=0; i<startNode->inputValueNumber; i++)
+	{
+		redirectParents(startNode->getChildNode(i),oldNode,newNode);
+		// Now it is safe to change the child pointer (if necessary)
+	}
+
+	startNode->replaceChildPointer(oldNode, newNode);
+}
+
+SequenceCounterTreeNode *SequenceCounterTreeNode::getMergedNode(SequenceCounterTreeNode *root, SequenceCounterTreeNode *nodeA,SequenceCounterTreeNode *nodeB)
+{
+	assert(root!=NULL);
+	if (nodeA == root || nodeB == root)
+	{
+		throw new std::exception("SequenceCounterTreeNode::getMergedNode: Root node cannot be combined!");
+	}
+
+	// If any of the nodes is NULL, simply return the other one
+	if (nodeA == NULL)
+		return nodeB;
+	if (nodeB == NULL)
+		return nodeA;
+
+	if (nodeA == nodeB)	// Possible due to previous merges...
+	{
+		return nodeA;
+	}
+
+	// Create new, combined node
+	SequenceCounterTreeNode *newNode = new SequenceCounterTreeNode(nodeA->inputValueNumber);
+
+	// Combine children (without modifying parent which is already replaced...)
+	for(int i=0; i<root->inputValueNumber; i++)
+	{
+		newNode->children[i] = getMergedNode(root,nodeA->children[i],nodeB->children[i]);
+	}
+	// Merge other fields
+	newNode->auxScore = 0;	// Cannot be merged! (!)
+	for(int i=0; i<MAXNODECOUNTERNUM; i++)
+	{
+		newNode->counter[i] = nodeA->counter[i] + nodeB->counter[i];
+	}
+
+	// Redirect parent nodes (if exist)
+	redirectParents(root,nodeA,newNode);
+	redirectParents(root,nodeB,newNode);
+
+	return newNode;
+}
+
+void SequenceCounterTreeNode::combineNodes(SequenceCounterTreeNode *root, SequenceCounterTreeNode *nodeA, SequenceCounterTreeNode *nodeB)
+{
+	SequenceCounterTreeNode *mergedNode = SequenceCounterTreeNode::getMergedNode(root,nodeA,nodeB);
+	redirectParents(root,nodeA,mergedNode);
+	redirectParents(root,nodeB,mergedNode);
+}
+
+bool SequenceCounterTreeNode::isParentOf(SequenceCounterTreeNode *node)
+{
+	if (this==node)
+	{
+		return true;
+	}
+	for(int i=0; i<inputValueNumber; i++)
+	{
+		if (children[i]!=NULL)
+		{
+			if (children[i]->isParentOf(node))
+			{
+				return true;
+			}
+		}
+	}
+	return false;
 }
