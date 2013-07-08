@@ -10,13 +10,17 @@ namespace smeyel
 	/** Used to calculate a transition probability statistic from a sequence of values. */
 	class FsmLearner : public TransitionStat
 	{
-		// used by checkCanCombineNodes
+		/** Returns the precision for a given node.
+			Used by checkCanCombineNodes().
+		*/
 		float getNodePrecision(SequenceCounterTreeNode *nodeA);
-		// used by checkCanCombineNodes
+		/** Returns the combined precision of two nodes (if they would be merged together.)
+			Used by checkCanCombineNodes
+		*/
 		float getCombinedPrecision(SequenceCounterTreeNode *nodeA, SequenceCounterTreeNode *nodeB);
 
 	public:
-		/**
+		/** Constructor
 			@param inputValueNumber	The number of possible input values, also the maximal input value + 1.
 			@param markovChainOrder	The length of history taken into account (order of Markov Chain)
 			@param initialValue		Inputs prior to first added value are considered to be this value.
@@ -24,35 +28,38 @@ namespace smeyel
 		*/
 		FsmLearner(const unsigned int inputValueNumber, const unsigned int markovChainOrder, const unsigned int initialValue);
 
-	public:
-		float trainMinPrecision;
-		int trainMinSampleNum;
-		void findClassifierSequences(notifycallbackPtr callback);
-
-		// --------------- Graph tidy-up functions
-		// returns change of number of recognized sequences if the two nodes are merged. minPrecision must be preserved
-		//	in every case where it was above the threshold originally.
-
-		// used by optimizeGraph
+	private:
+		/** Check whether two nodes can be combined together while maintaining minPrecision.
+			Subtrees are also checked.
+		*/
 		bool checkCanCombineNodes(SequenceCounterTreeNode *nodeA, SequenceCounterTreeNode *nodeB,
 			float minPrecision, bool hasHighPrecisionParent=false);
-		// wrapper to SequenceCounterTreeNode::combineNodes
-		// used by optimizeGraph
+		
+		/** Wrapper to SequenceCounterTreeNode::combineNodes
+			Used by optimizeGraph
+		*/
 		void combineNodes(SequenceCounterTreeNode *nodeA, SequenceCounterTreeNode *nodeB);
 
-		// ------------------------ from fsmlearning.cpp
+		/** Collects all nodes into given vector.
+			Used to track the nodes not linked anymore after optimizations.
+			The order of nodes starts from the leaves, then their common roots, than other leaves etc.
+		*/
 		void collectNodesBackwards(vector<SequenceCounterTreeNode *> *allNodes, SequenceCounterTreeNode *node);
 
+		/** Checks all pairs of nodes for possible merging using checkCanCombineNodes(). */
 		pair<SequenceCounterTreeNode *,SequenceCounterTreeNode *>
-			checkAllCombinationsForMerge(FsmLearner *stat, vector<SequenceCounterTreeNode *> *allNodes, float minPrecision);
+			checkAllCombinationsForMerge(vector<SequenceCounterTreeNode *> *allNodes, float minPrecision);
 
+		/** Deletes the nodes present in oldNodes but not present in newNodes.
+			Used to delete unused nodes. The required lists may be created using collectNodesBackwards().
+		*/
 		void deleteRemovedNodes(
 			vector<SequenceCounterTreeNode *> *oldNodes,
 			vector<SequenceCounterTreeNode *> *newNodes);
 
-
-
-
+	public:
+		/** Optimizing for precision, re-organizes the graph by merging nodes. */
+		void mergeNodesForPrecision(vector<string> *inputValueNames);
 	};
 }
 

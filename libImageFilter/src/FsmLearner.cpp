@@ -149,7 +149,7 @@ void FsmLearner::collectNodesBackwards(vector<SequenceCounterTreeNode *> *allNod
 }
 
 pair<SequenceCounterTreeNode *,SequenceCounterTreeNode *>
-	FsmLearner::checkAllCombinationsForMerge(FsmLearner *stat, vector<SequenceCounterTreeNode *> *allNodes, float minPrecision)
+	FsmLearner::checkAllCombinationsForMerge(vector<SequenceCounterTreeNode *> *allNodes, float minPrecision)
 {
 	int inputValueNumber = (*allNodes)[0]->getInputValueNumber();
 	int nodeNumber = allNodes->size();
@@ -180,7 +180,7 @@ pair<SequenceCounterTreeNode *,SequenceCounterTreeNode *>
 
 			cout << "--- Checking node pair: " << idA << " and " << idB << endl;
 
-			bool canCombine = stat->checkCanCombineNodes(nodeA,nodeB,minPrecision);
+			bool canCombine = checkCanCombineNodes(nodeA,nodeB,minPrecision);
 			if (canCombine)
 			{
 				cout << "COMBINE: " << nodeA->getNodeID() << " and " << nodeB->getNodeID() << endl;
@@ -216,4 +216,41 @@ void FsmLearner::deleteRemovedNodes(
 			(*oldNodes)[i]=NULL;	// just to make sure...
 		}
 	}
+}
+
+void FsmLearner::mergeNodesForPrecision(vector<string> *inputValueNames)
+{
+	vector<SequenceCounterTreeNode *> *allNodes = new vector<SequenceCounterTreeNode *>();
+	vector<SequenceCounterTreeNode *> *newAllNodes = new vector<SequenceCounterTreeNode *>();
+
+	bool running=true;
+	while (running)
+	{
+		allNodes->clear();
+		collectNodesBackwards(allNodes,counterTreeRoot);
+
+		pair<SequenceCounterTreeNode *,SequenceCounterTreeNode *> toCombine =
+			checkAllCombinationsForMerge(allNodes,0.7F);	// TODO: do not hardwire the precision!
+		if (toCombine.first==NULL || toCombine.second==NULL)
+		{
+			running=false;
+			break;
+		}
+
+		int idA = toCombine.first->getNodeID();
+		int idB = toCombine.second->getNodeID();
+		cout << "------------- combining nodes... -------------" << endl;
+		cout << "COMBING: " << toCombine.first->getNodeID() << " and " << toCombine.second->getNodeID() << endl;
+		combineNodes(toCombine.first,toCombine.second);
+
+		// TODO: delete should be done inside combineNodes!!!
+		newAllNodes->clear();
+		collectNodesBackwards(newAllNodes,counterTreeRoot);
+		deleteRemovedNodes(allNodes,newAllNodes);
+
+		counterTreeRoot->showCompactRecursive(0,1,inputValueNames);
+	}
+
+	delete allNodes;
+	allNodes=NULL;
 }

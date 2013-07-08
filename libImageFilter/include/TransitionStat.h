@@ -45,6 +45,7 @@ namespace smeyel
 
 		~TransitionStat();
 
+		/** Removes any states or input sequences stored in internal buffers. */
 		void startNewSequence();
 
 		/**	Adds a new value to the sequence.
@@ -54,27 +55,41 @@ namespace smeyel
 		*/
 		void addValue(const unsigned int inputValue, const bool isTargetArea);
 
+		/** Using incrementally just like addValue(), it returns the
+			auxiliary score value of the next node.
+		*/
 		unsigned char getScoreForValue(const unsigned int inputValue);
 
-		// Higher level functions
+		// --- Higher level functions
 	private:
+		/** */
 		unsigned char lastValue;
+		/** Was the last received value inside the target area? */
 		bool lastIsTargetArea;
+		/** Number of times the last value is continuously repeated. */
 		int runLength;
+		/** The last valid score. */
 		unsigned char lastScore;
+		/** Like addValue(), but adds a runlength quantizing feature. */
 		void addRunLengthQuantizedValue(unsigned char value, bool isTargetArea);
+		/** getScoreForValue() replacement for the quantized runlength case. */
 		unsigned char getScoreForRunLengthQuantizedValue(unsigned char value);
+		/** Checks wether the given node is a suitable classifier between target and background areas. */
 		void checkNode(SequenceCounterTreeNode *node, float sumOn, float sumOff, int maxInputValue, notifycallbackPtr callback);
 
 	public:
+		/** Feeds a CV_81C1 (like LUT) image using addValue pixel-by-pixel. */
 		void addImage(cv::Mat &image, bool isOn);
+		/** Retrieves the score with getScoreForValue() for every pixel. */
 		void getScoreMaskForImage(cv::Mat &src, cv::Mat &dst);
 
+		/** When training a classifier using checkNode(), the minimal required precision for suitablility. */
 		float trainMinPrecision;
+		/** Used by checkNode(), the minimal number of samples for suitablility. */
 		int trainMinSampleNum;
+		/** Uses checkNode() to find suitable classifier sequences to recognize the target area. */
 		void findClassifierSequences(notifycallbackPtr callback);
 	};
 }
-
 
 #endif
