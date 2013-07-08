@@ -78,6 +78,7 @@
     <ClInclude Include="include\ColorFilter.h" />
     <ClInclude Include="include\FsmBuilder.h" />
     <ClInclude Include="include\FsmColorFilter.h" />
+    <ClInclude Include="include\FsmLearner.h" />
     <ClInclude Include="include\LutColorFilter.h" />
     <ClInclude Include="include\LutFsmLocator.h" />
     <ClInclude Include="include\SequenceCounterTreeNode.h" />
@@ -87,6 +88,7 @@
     <ClCompile Include="src\ColorFilter.cpp" />
     <ClCompile Include="src\FsmBuilder.cpp" />
     <ClCompile Include="src\FsmColorFilter.cpp" />
+    <ClCompile Include="src\FsmLearner.cpp" />
     <ClCompile Include="src\LutColorFilter.cpp" />
     <ClCompile Include="src\LutFsmLocator.cpp" />
     <ClCompile Include="src\SequenceCounterTreeNode.cpp" />

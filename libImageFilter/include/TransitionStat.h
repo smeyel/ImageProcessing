@@ -17,6 +17,7 @@ namespace smeyel
 	/** Used to calculate a transition probability statistic from a sequence of values. */
 	class TransitionStat
 	{
+	protected:
 		/** Array containing the last input values. Length corresponds the order of the markov chain. */
 		unsigned int *lastValues;
 		/** Input values considered before the first input. */
@@ -72,26 +73,6 @@ namespace smeyel
 		float trainMinPrecision;
 		int trainMinSampleNum;
 		void findClassifierSequences(notifycallbackPtr callback);
-
-		// Tree tidy-up functions
-		// returns change of number of recognized sequences if the two nodes are merged. minPrecision must be preserved
-		//	in every case where it was above the threshold originally.
-	private:
-		// used by checkCanCombineNodes
-		float getNodePrecision(SequenceCounterTreeNode *nodeA);
-		// used by checkCanCombineNodes
-		float getCombinedPrecision(SequenceCounterTreeNode *nodeA, SequenceCounterTreeNode *nodeB);
-
-	public:
-		// used by optimizeGraph
-		bool checkCanCombineNodes(SequenceCounterTreeNode *nodeA, SequenceCounterTreeNode *nodeB,
-			float minPrecision, bool hasHighPrecisionParent=false);
-		// wrapper to SequenceCounterTreeNode::combineNodes
-		// used by optimizeGraph
-		void combineNodes(SequenceCounterTreeNode *nodeA, SequenceCounterTreeNode *nodeB);
-
-		void optimizeGraph();
-
 	};
 }
 
