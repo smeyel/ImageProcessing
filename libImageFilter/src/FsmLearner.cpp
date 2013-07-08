@@ -128,3 +128,92 @@ void FsmLearner::combineNodes(SequenceCounterTreeNode *nodeA, SequenceCounterTre
 {
 	SequenceCounterTreeNode::combineNodes(counterTreeRoot,nodeA,nodeB);
 }
+
+
+void FsmLearner::collectNodesBackwards(vector<SequenceCounterTreeNode *> *allNodes, SequenceCounterTreeNode *node)
+{
+	if (node==NULL)
+	{
+		return;
+	}
+	int n = node->getInputValueNumber();
+	// first, recursive call
+	for(int i=0; i<n; i++)
+		collectNodesBackwards(allNodes, node->getChildNode(i));
+
+	// second, add after all children are added
+	for(unsigned int i=0; i<allNodes->size(); i++)
+		if ((*allNodes)[i]==node)
+			return;	// Already added
+	allNodes->push_back(node);
+}
+
+pair<SequenceCounterTreeNode *,SequenceCounterTreeNode *>
+	FsmLearner::checkAllCombinationsForMerge(FsmLearner *stat, vector<SequenceCounterTreeNode *> *allNodes, float minPrecision)
+{
+	int inputValueNumber = (*allNodes)[0]->getInputValueNumber();
+	int nodeNumber = allNodes->size();
+
+	for(unsigned int a=1; a<allNodes->size(); a++)	// "a" is always the next new node
+	{
+		for(unsigned int b=0; b<a; b++)	// "b" is iterating on all previously checked nodes
+		{
+			assert(a!=b);
+
+			// Check nodes a and b
+			SequenceCounterTreeNode *nodeA = (*allNodes)[a];
+			SequenceCounterTreeNode *nodeB = (*allNodes)[b];
+
+			int idA = nodeA->getNodeID();
+			int idB = nodeA->getNodeID();
+
+			if (nodeA->getNodeID() == nodeB->getNodeID())
+			{
+				continue;	// May happen due to previous merges...
+			}
+
+			// They cannot be parents of each other
+			if (nodeA->isParentOf(nodeB) || nodeB->isParentOf(nodeA))
+			{
+				continue;
+			}
+
+			cout << "--- Checking node pair: " << idA << " and " << idB << endl;
+
+			bool canCombine = stat->checkCanCombineNodes(nodeA,nodeB,minPrecision);
+			if (canCombine)
+			{
+				cout << "COMBINE: " << nodeA->getNodeID() << " and " << nodeB->getNodeID() << endl;
+				// Do not search for further combination possibilities...
+				pair<SequenceCounterTreeNode *,SequenceCounterTreeNode *> result;
+				result.first = nodeA;
+				result.second = nodeB;
+				return result;
+			}
+		}
+	}
+	return pair<SequenceCounterTreeNode *,SequenceCounterTreeNode *>(
+		(SequenceCounterTreeNode *)NULL,(SequenceCounterTreeNode *)NULL);	// No more possibilities found
+}
+
+void FsmLearner::deleteRemovedNodes(
+	vector<SequenceCounterTreeNode *> *oldNodes,
+	vector<SequenceCounterTreeNode *> *newNodes)
+{
+	for(unsigned int i=0; i<oldNodes->size(); i++)
+	{
+		bool found = false;
+		for(unsigned int j=0; j<newNodes->size(); j++)
+		{
+			if ((*newNodes)[j]==(*oldNodes)[i])
+				found=true;
+		}
+		if (!found)
+		{
+			// First, disconnect all children, otherwise, delete goes on!!!
+			(*oldNodes)[i]->disconnectAllChildren();
+			delete (*oldNodes)[i];
+			(*oldNodes)[i]=NULL;	// just to make sure...
+		}
+	}
+}

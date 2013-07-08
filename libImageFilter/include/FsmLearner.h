@@ -39,6 +39,20 @@ namespace smeyel
 		// wrapper to SequenceCounterTreeNode::combineNodes
 		// used by optimizeGraph
 		void combineNodes(SequenceCounterTreeNode *nodeA, SequenceCounterTreeNode *nodeB);
+
+		// ------------------------ from fsmlearning.cpp
+		void collectNodesBackwards(vector<SequenceCounterTreeNode *> *allNodes, SequenceCounterTreeNode *node);
+
+		pair<SequenceCounterTreeNode *,SequenceCounterTreeNode *>
+			checkAllCombinationsForMerge(FsmLearner *stat, vector<SequenceCounterTreeNode *> *allNodes, float minPrecision);
+
+		void deleteRemovedNodes(
+			vector<SequenceCounterTreeNode *> *oldNodes,
+			vector<SequenceCounterTreeNode *> *newNodes);
+
+
+
+
 	};
 }
 
