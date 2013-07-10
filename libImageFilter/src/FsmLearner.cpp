@@ -262,7 +262,8 @@ void FsmLearner::setPrecisionStatus(SequenceCounterTreeNode *node, float minPrec
 		return;
 	}
 
-	if (FsmLearner::getNodePrecision(node) >= minPrecision)
+	float precision = FsmLearner::getNodePrecision(node);
+	if (precision >= minPrecision)
 	{
 		node->status = STATUS_HIGHPRECISION;
 	}
@@ -270,6 +271,7 @@ void FsmLearner::setPrecisionStatus(SequenceCounterTreeNode *node, float minPrec
 	{
 		node->status = STATUS_LOWPRECISION;
 	}
+	node->auxScore = (unsigned char)(128.0F + (precision-minPrecision)/(1.0F-minPrecision)*127.0F);
 
 	int n = node->getInputValueNumber();
 	// first, recursive call
