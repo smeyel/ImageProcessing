@@ -36,6 +36,8 @@ namespace smeyel
 	public:
 		/** Auxiliary number, can be used freely for any purpose. */
 		unsigned char auxScore;
+		/** Auxiliary number, can be used freely for any purpose. */
+		unsigned int status;
 
 		/** Constructor
 			@param inputValueNumber	The number of possible input values (and thus, child nodes)
@@ -131,6 +133,15 @@ namespace smeyel
 		*/
 		static void combineNodes(SequenceCounterTreeNode *root, SequenceCounterTreeNode *nodeA, SequenceCounterTreeNode *nodeB);
 
+	public:
+		/** Cuts subtree is the status of all nodes in it is the same as the status of this one (status).
+			Otherwise, tries with the child nodes.
+			@param parentStatus	The status property of the parent node.
+				It only influences the return value.
+			@return true if the node can be removed as all children could be removed and its status is the same as the parents.
+			@warning: use only on real trees, not suitable for DAG-s!
+		*/
+		bool cut(unsigned int parentStatus = 0);
 	};
 }
 

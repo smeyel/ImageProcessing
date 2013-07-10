@@ -3,6 +3,9 @@
 
 #include "TransitionStat.h"
 
+#define STATUS_HIGHPRECISION	1
+#define STATUS_LOWPRECISION		0
+
 using namespace smeyel;
 
 namespace smeyel
@@ -60,9 +63,10 @@ namespace smeyel
 	public:
 		/** Optimizing for precision, re-organizes the graph by merging nodes. */
 		void mergeNodesForPrecision(vector<string> *inputValueNames);
+
+		/** Sets node status based on precision */
+		void setPrecisionStatus(SequenceCounterTreeNode *node, float minPrecision);
 	};
 }
-
-
 
 #endif

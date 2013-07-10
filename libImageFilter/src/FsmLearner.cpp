@@ -254,3 +254,27 @@ void FsmLearner::mergeNodesForPrecision(vector<string> *inputValueNames)
 	delete allNodes;
 	allNodes=NULL;
 }
+
+void FsmLearner::setPrecisionStatus(SequenceCounterTreeNode *node, float minPrecision)
+{
+	if (node==NULL)
+	{
+		return;
+	}
+
+	if (FsmLearner::getNodePrecision(node) >= minPrecision)
+	{
+		node->status = STATUS_HIGHPRECISION;
+	}
+	else
+	{
+		node->status = STATUS_LOWPRECISION;
+	}
+
+	int n = node->getInputValueNumber();
+	// first, recursive call
+	for(int i=0; i<n; i++)
+	{
+		setPrecisionStatus(node->getChildNode(i), minPrecision);
+	}
+}

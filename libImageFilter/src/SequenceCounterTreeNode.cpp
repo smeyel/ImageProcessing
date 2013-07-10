@@ -183,7 +183,7 @@ void SequenceCounterTreeNode::showCompactRecursive(int indent, int maxCounterIdx
 			cout << "/";
 		}
 	}
-	cout << "(NodeID="<<nodeID<<")" << endl;
+	cout << "(NodeID="<<nodeID<<", status="<<status<<")" << endl;
 	// show children
 	for(int i=0; i<inputValueNumber; i++)
 	{
@@ -296,5 +296,48 @@ bool SequenceCounterTreeNode::isParentOf(SequenceCounterTreeNode *node)
 			}
 		}
 	}
+	return false;
+}
+
+bool SequenceCounterTreeNode::cut(unsigned int parentStatus)
+{
+	//cout << "--- Cut@" << this->nodeID << " parentStatus=" << parentStatus << " status=" << status << endl;
+	// check this node
+	bool isStatusEqual = (this->status == parentStatus);
+
+	// Recursive check for all children
+	bool allRemoved = true;
+	for(int i=0; i<inputValueNumber; i++)
+	{
+		SequenceCounterTreeNode *child = children[i];
+		if (child)
+		{
+			// Children are checked with this->status in every case.
+			bool result = child->cut(this->status);
+
+			if (!result)
+			{
+				//cout << "Cut@" << this->nodeID << " child " << i << ": keep" << endl;
+				allRemoved = false;	// Could not remove all children
+			}
+			else
+			{
+				//cout << "Cut@" << this->nodeID << " child " << i << ": DEL" << endl;
+				// Remove child
+				delete child;
+				children[i] = NULL;
+			}
+		}
+	}
+
+	// THis node can be removed if
+	//	- all children are removed, and
+	//	- the auxScore is the same as of the parent (caller)
+	if (allRemoved && isStatusEqual)
+	{
+		//cout << "Cut@" << this->nodeID << " removeable" << endl;
+		return true;
+	}
+	//cout << "Cut@" << this->nodeID << " not removeable" << endl;
 	return false;
 }
