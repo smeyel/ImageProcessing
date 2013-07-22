@@ -78,6 +78,9 @@ namespace smeyel
 		/** Overwrites counter of current node with sum of children, except if there are no children (or sum is 0). */
 		int calculateSubtreeCounters(int counterIdx);
 
+		/** Multiplies given counter with multiplier in the whole subtree. */
+		void multiplySubtreeCounters(int counterIdx, float multiplier);
+
 		/** Shows the subtree of the node recursively on cout. */
 		void showRecursive(int indent, int maxCounterIdx, bool showNullChildren);
 
@@ -142,6 +145,12 @@ namespace smeyel
 			@warning: use only on real trees, not suitable for DAG-s!
 		*/
 		bool cut(unsigned int parentStatus = 0);
+
+		// Only for info
+		static void showNodeNumber()
+		{
+			cout << "Current SequenceCounterTreeNode number is " << nextFreeNodeID << "." << endl;
+		}
 	};
 }
 

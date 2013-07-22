@@ -113,13 +113,12 @@ int SequenceCounterTreeNode::getSubtreeSumCounter(int counterIdx)
 /** Overwrites counter of current node with sum of children, except if there are no children (or sum is 0). */
 int SequenceCounterTreeNode::calculateSubtreeCounters(int counterIdx)
 {
-	OPENCV_ASSERT(counterIdx<MAXNODECOUNTERNUM,"SequenceCounterTreeNode.getAndStoreSubtreeSumCounter","Counter IDX > max!");
-	OPENCV_ASSERT(counterIdx>=0,"SequenceCounterTreeNode.getAndStoreSubtreeSumCounter","Counter IDX negative!");
+	OPENCV_ASSERT(counterIdx<MAXNODECOUNTERNUM,"SequenceCounterTreeNode.calculateSubtreeCounters","Counter IDX > max!");
+	OPENCV_ASSERT(counterIdx>=0,"SequenceCounterTreeNode.calculateSubtreeCounters","Counter IDX negative!");
 
 	int childrenSum=0;
 	for(int i=0; i<inputValueNumber; i++)
 	{
-		// Cannot use getChildNode() as that would create non-existing nodes infinite long...
 		if (children[i]!=NULL)
 		{
 			childrenSum += children[i]->calculateSubtreeCounters(counterIdx);
@@ -132,6 +131,21 @@ int SequenceCounterTreeNode::calculateSubtreeCounters(int counterIdx)
 	}
 
 	return counter[counterIdx];
+}
+
+void SequenceCounterTreeNode::multiplySubtreeCounters(int counterIdx, float multiplier)
+{
+	OPENCV_ASSERT(counterIdx<MAXNODECOUNTERNUM,"SequenceCounterTreeNode.multiplySubtreeCounters","Counter IDX > max!");
+	OPENCV_ASSERT(counterIdx>=0,"SequenceCounterTreeNode.multiplySubtreeCounters","Counter IDX negative!");
+
+	for(int i=0; i<inputValueNumber; i++)
+	{
+		if (children[i]!=NULL)
+		{
+			children[i]->multiplySubtreeCounters(counterIdx, multiplier);
+		}
+	}
+	counter[counterIdx] = (int)( (float)counter[counterIdx] * multiplier );
 }
 
 void SequenceCounterTreeNode::writeIndent(int indent)

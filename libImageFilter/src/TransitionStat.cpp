@@ -136,19 +136,33 @@ void TransitionStat::addValue(const unsigned int inputValue, const bool isTarget
 unsigned char TransitionStat::getScoreForValue(const unsigned int inputValue)
 {
 	OPENCV_ASSERT(inputValue<inputValueNumber,"TransitionStat.getScoreForValue","value > max!");
+	valueNumberSinceSequenceStart++;
 	// Update history (lastValues)
 	for(unsigned int i=0; i<markovChainOrder-1; i++)
 		lastValues[i]=lastValues[i+1];
 	lastValues[markovChainOrder-1] = inputValue;
 
-	SequenceCounterTreeNode *node = NULL;
-	node = counterTreeRoot->getNode(lastValues,markovChainOrder,false);
-
-	// Increment respective counter
-	if (node)
+	// Get the node only if initial values are already shifted out of the lastValues array.
+	if (valueNumberSinceSequenceStart>=markovChainOrder)
 	{
-		return node->auxScore;
+		SequenceCounterTreeNode *node = NULL;
+
+		if (useRunLengthEncoding)
+		{
+			unsigned int length = runlengthEncodeSequence();
+			node = counterTreeRoot->getNode(lengthEncodingOutputBuffer,length,true);
+		}
+		else
+		{
+			node = counterTreeRoot->getNode(lastValues,markovChainOrder,true);
+		}
+
+		if (node)
+		{
+			return node->auxScore;
+		}
 	}
+
 	return 0;
 }
 
@@ -215,6 +229,8 @@ void TransitionStat::getScoreMaskForImage(Mat &src, Mat &dst)
 		const uchar *srcPtr = (const uchar *)(src.data + row*src.step);
 		uchar *dstPtr = (uchar *)(dst.data + row*dst.step);
 
+		// Sequences are restarted at the beginning of every image row.
+		startNewSequence();
 		// Go along every BGR colorspace pixel
 		for (int col=0; col<src.cols; col++)
 		{
@@ -226,6 +242,48 @@ void TransitionStat::getScoreMaskForImage(Mat &src, Mat &dst)
 		}	// end for col
 	}	// end for row
 }
+
+// For debug purposes
+void TransitionStat::verboseScoreForImageLocation(Mat &src, Point pointToCheck)
+{
+	// Assert for only 8UC1 output images
+	OPENCV_ASSERT(src.type() == CV_8UC1,"getVerboseScoreForImageLocation","src type is not CV_8UC1");
+
+	// Calculate pointer to the beginning of the current row
+	uchar *srcPtr = (uchar *)(src.data + pointToCheck.y*src.step);
+
+	if (pointToCheck.x < markovChainOrder)
+	{
+		cout << "Point to check may be too close the the image border (x<markovChainOrder)" << endl;
+	}
+
+	uchar *ptr = NULL;
+	for(unsigned int i=0; i<markovChainOrder; i++)
+	{
+		ptr = srcPtr+pointToCheck.x-markovChainOrder+i;
+		lastValues[i]=*ptr;
+		*ptr = 0x00;	// Debug purposes
+	}
+
+	SequenceCounterTreeNode *node = NULL;
+
+	cout << "Source and encoded buffer values:" << endl;
+	showBufferContent("LastValues",lastValues,markovChainOrder);
+	unsigned int length = runlengthEncodeSequence();
+	showBufferContent("LenEncoded",lengthEncodingOutputBuffer,length);
+
+	node = counterTreeRoot->getNode(lengthEncodingOutputBuffer,length,true);
+	if (node)
+	{
+		cout << "Node status=" << node->status << ", auxScore=" << (int)(node->auxScore) << endl;
+		cout << "Node aux score is: " << (int)(node->auxScore) << endl;
+	}
+	else
+	{
+		cout << "No available node..." << endl;
+	}
+}
+
 
 // Used by findClassifierSequences() recursively.
 void TransitionStat::checkNode(SequenceCounterTreeNode *node, float sumOn, float sumOff, int maxInputValue, notifycallbackPtr callback)

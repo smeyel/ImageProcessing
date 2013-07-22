@@ -106,6 +106,8 @@ namespace smeyel
 		/** Retrieves the score with getScoreForValue() for every pixel. */
 		void getScoreMaskForImage(cv::Mat &src, cv::Mat &dst);
 
+		void verboseScoreForImageLocation(cv::Mat &src, cv::Point pointToCheck);
+
 		// ----------- Debug helpers
 		void showBufferContent(const char *bufferName, unsigned int *buffer, unsigned int length);
 	};
