@@ -134,7 +134,7 @@ namespace smeyel
 		static void combineNodes(SequenceCounterTreeNode *root, SequenceCounterTreeNode *nodeA, SequenceCounterTreeNode *nodeB);
 
 	public:
-		/** Cuts subtree is the status of all nodes in it is the same as the status of this one (status).
+		/** Cuts subtree if the status of all nodes in it is the same as the status of this one (status).
 			Otherwise, tries with the child nodes.
 			@param parentStatus	The status property of the parent node.
 				It only influences the return value.

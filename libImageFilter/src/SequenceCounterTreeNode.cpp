@@ -128,7 +128,7 @@ int SequenceCounterTreeNode::calculateSubtreeCounters(int counterIdx)
 
 	if (childrenSum>0)
 	{
-		counter[counterIdx] = childrenSum;
+		counter[counterIdx] += childrenSum;	// Uses += as internal nodes may have been used as sequence ending node, thus local counter is not necessarily 0.
 	}
 
 	return counter[counterIdx];
@@ -330,7 +330,7 @@ bool SequenceCounterTreeNode::cut(unsigned int parentStatus)
 		}
 	}
 
-	// THis node can be removed if
+	// This node can be removed if
 	//	- all children are removed, and
 	//	- the auxScore is the same as of the parent (caller)
 	if (allRemoved && isStatusEqual)

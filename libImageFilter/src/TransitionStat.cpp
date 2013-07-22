@@ -3,10 +3,13 @@
 using namespace smeyel;
 using namespace cv;
 
+bool TransitionStat::useRunLengthEncoding = true;
+
 TransitionStat::TransitionStat(const unsigned int inputValueNumber, const unsigned int markovChainOrder, const unsigned int initialValue)
 {
 	counterTreeRoot = new SequenceCounterTreeNode(inputValueNumber);
 	lastValues = new unsigned int[markovChainOrder];
+	lengthEncodingOutputBuffer = new unsigned int[markovChainOrder];
 	this->inputValueNumber = inputValueNumber;
 	this->markovChainOrder = markovChainOrder;
 	this->initialValue = initialValue;
@@ -15,7 +18,7 @@ TransitionStat::TransitionStat(const unsigned int inputValueNumber, const unsign
 
 	lastValue = -1;
 	lastIsTargetArea = false;
-	runLength = 0;
+	//runLength = 0;
 	lastScore = 0;
 
 	trainMinPrecision=0.9F;
@@ -27,8 +30,10 @@ TransitionStat::~TransitionStat()
 {
 	delete counterTreeRoot;
 	delete lastValues;
+	delete lengthEncodingOutputBuffer;
 	counterTreeRoot = NULL;
 	lastValues = NULL;
+	lengthEncodingOutputBuffer = NULL;
 }
 
 void TransitionStat::startNewSequence()
@@ -36,6 +41,56 @@ void TransitionStat::startNewSequence()
 	for(unsigned int i=0; i<markovChainOrder; i++)
 		lastValues[i]=initialValue;
 	valueNumberSinceSequenceStart=0;
+}
+
+unsigned int TransitionStat::appendEncodedTimes(unsigned int *target, unsigned int value, unsigned int runlength)
+{
+	// Write to output a changed number of lastValue-s.
+	int encodedRunLength = 0;
+	if (runlength>=5)	encodedRunLength = 1;
+	if (runlength>=10)	encodedRunLength = 2;
+	if (runlength>=20)	encodedRunLength = 3;
+	for (int i=0; i<encodedRunLength; i++)
+	{
+		*target = value;
+		target++;
+	}
+	return encodedRunLength;
+}
+
+// Use by addValue and getScoreForValue
+unsigned int TransitionStat::runlengthEncodeSequence()
+{
+	// Transforms the input into the output buffer.
+	// The length of internal homogeneous value sequences are encoded into a few distinct values.
+	unsigned int *inputBuffer = this->lastValues;
+	unsigned int *outputBuffer = this->lengthEncodingOutputBuffer;
+
+	unsigned int targetLength = 0;
+	unsigned int prevValue = *inputBuffer;
+	unsigned int runlength = 0;
+	for(int i=0; i<this->markovChainOrder; i++)
+	{
+		if (inputBuffer[i]==prevValue)
+		{
+			runlength++;
+		}
+		else
+		{
+			unsigned int encodedRunLength = appendEncodedTimes(outputBuffer,prevValue,runlength);
+			targetLength += encodedRunLength;
+			outputBuffer += encodedRunLength;
+
+			// Update lastValues
+			prevValue = inputBuffer[i];
+			runlength = 1;
+		}
+	}
+
+	unsigned int encodedRunLength = appendEncodedTimes(outputBuffer,prevValue,runlength);
+	targetLength += encodedRunLength;
+
+	return targetLength;
 }
 
 /**	Adds a new value to the sequence.
@@ -47,7 +102,7 @@ void TransitionStat::addValue(const unsigned int inputValue, const bool isTarget
 {
 	OPENCV_ASSERT(inputValue<inputValueNumber,"TransitionStat.addValue","value > max!");
 	valueNumberSinceSequenceStart++;
-	// Update history (lastValues)
+	// Shift and update history (lastValues)
 	for(unsigned int i=0; i<markovChainOrder-1; i++)
 		lastValues[i]=lastValues[i+1];
 	lastValues[markovChainOrder-1] = inputValue;
@@ -56,7 +111,22 @@ void TransitionStat::addValue(const unsigned int inputValue, const bool isTarget
 	if (valueNumberSinceSequenceStart>=markovChainOrder)
 	{
 		SequenceCounterTreeNode *node = NULL;
-		node = counterTreeRoot->getNode(lastValues,markovChainOrder,true);
+
+		if (useRunLengthEncoding)
+		{
+			// Debug
+			//showBufferContent("LastValues",lastValues,markovChainOrder);
+
+			unsigned int length = runlengthEncodeSequence();
+			// Debug
+			//showBufferContent("LenEncoded",lengthEncodingOutputBuffer,length);
+
+			node = counterTreeRoot->getNode(lengthEncodingOutputBuffer,length,true);
+		}
+		else
+		{
+			node = counterTreeRoot->getNode(lastValues,markovChainOrder,true);
+		}
 
 		// Increment respective counter
 		node->incrementCounter(isTargetArea ? COUNTERIDX_ON : COUNTERIDX_OFF);
@@ -82,26 +152,50 @@ unsigned char TransitionStat::getScoreForValue(const unsigned int inputValue)
 	return 0;
 }
 
+// Deprecated, use addImage(image,onRect) instead!
 void TransitionStat::addImage(Mat &image, bool isOn)
 {
 	// Assert for only 8UC1 output images
 	OPENCV_ASSERT(image.type() == CV_8UC1,"feedImageIntoTransitionStat","Image type is not CV_8UC1");
-
-	startNewSequence();
 
 	// Go along every pixel and do the following:
 	for (int row=0; row<image.rows; row++)
 	{
 		// Calculate pointer to the beginning of the current row
 		const uchar *ptr = (const uchar *)(image.data + row*image.step);
-
+		
+		// Sequences are restarted at the beginning of every image row.
+		startNewSequence();
 		// Go along every BGR colorspace pixel
 		for (int col=0; col<image.cols; col++)
 		{
 			unsigned char value = *ptr++;
 
 			addValue(value,isOn);
-			//addRunLengthQuantizedValue(value,isOn);
+		}	// end for col
+	}	// end for row
+}
+
+void TransitionStat::addImage(Mat &image, Rect &onRect)
+{
+	// Assert for only 8UC1 output images
+	OPENCV_ASSERT(image.type() == CV_8UC1,"feedImageIntoTransitionStat","Image type is not CV_8UC1");
+
+	// Go along every pixel and do the following:
+	for (int row=0; row<image.rows; row++)
+	{
+		// Calculate pointer to the beginning of the current row
+		const uchar *ptr = (const uchar *)(image.data + row*image.step);
+		
+		// Sequences are restarted at the beginning of every image row.
+		startNewSequence();
+		// Go along every BGR colorspace pixel
+		for (int col=0; col<image.cols; col++)
+		{
+			unsigned char value = *ptr++;
+
+			bool isOn = onRect.contains(Point(col,row));
+			addValue(value,isOn);
 		}	// end for col
 	}	// end for row
 }
@@ -126,60 +220,14 @@ void TransitionStat::getScoreMaskForImage(Mat &src, Mat &dst)
 		{
 			unsigned char value = *srcPtr++;
 
-			//*dstPtr = stat->getScoreForValue(value);
-			*dstPtr = getScoreForRunLengthQuantizedValue(value);
+			*dstPtr = getScoreForValue(value);
+			//*dstPtr = getScoreForRunLengthQuantizedValue(value);
 			dstPtr++;
 		}	// end for col
 	}	// end for row
 }
 
-void TransitionStat::addRunLengthQuantizedValue(unsigned char value, bool isTargetArea)
-{
-	if (value==lastValue)
-	{
-		runLength++;
-		lastIsTargetArea = isTargetArea;
-	}
-	else
-	{
-		int quantizedRunLength = 0;
-		if (runLength>=5)	quantizedRunLength = 1;
-		if (runLength>=10)	quantizedRunLength = 2;
-		if (runLength>=20)	quantizedRunLength = 3;
-		for (int i=0; i<quantizedRunLength; i++)
-			addValue(lastValue,lastIsTargetArea);
-		lastValue = value;
-		runLength = 1;
-		lastIsTargetArea = isTargetArea;
-	}
-}
-
-unsigned char TransitionStat::getScoreForRunLengthQuantizedValue(unsigned char value)
-{
-	if (value==lastValue)
-	{
-		runLength++;
-	}
-	else
-	{
-		int quantizedRunLength = 0;
-		if (runLength>=5)	quantizedRunLength = 1;
-		if (runLength>=10)	quantizedRunLength = 2;
-		if (runLength>=20)	quantizedRunLength = 3;
-		for (int i=0; i<quantizedRunLength-1; i++)	// Fetch n-1 values...
-			getScoreForValue(value);
-		unsigned char score = 0;	// Default for initial cases...
-		if (quantizedRunLength-1>0)
-		{
-			score = getScoreForValue(value);
-		}
-		lastScore = score;
-		lastValue = value;
-		runLength = 1;
-	}
-	return lastScore;
-}
-
+// Used by findClassifierSequences() recursively.
 void TransitionStat::checkNode(SequenceCounterTreeNode *node, float sumOn, float sumOff, int maxInputValue, notifycallbackPtr callback)
 {
 	int onNum = node->getCounter(COUNTERIDX_ON);
@@ -210,4 +258,15 @@ void TransitionStat::findClassifierSequences(notifycallbackPtr callback)
 	float sumOff = (float)counterTreeRoot->getCounter(COUNTERIDX_OFF);
 
 	checkNode(counterTreeRoot,sumOn,sumOff,7,callback);
+}
+
+void TransitionStat::showBufferContent(const char *bufferName, unsigned int *buffer, unsigned int length)
+{
+	cout << "Buffer [" << bufferName << "]: ";
+	for(int i=0; i<length; i++)
+	{
+		cout << *buffer;
+		buffer++;
+	}
+	cout << endl;
 }

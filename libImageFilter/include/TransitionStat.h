@@ -27,6 +27,9 @@ namespace smeyel
 		/** The length of history taken into account (order of Markov Chain) */
 		unsigned int markovChainOrder;
 
+		/** Used by getLengthEncodedSequence() as output buffer.*/
+		unsigned int *lengthEncodingOutputBuffer;
+
 		/** Used to decide whether initial values are still in the lastValues array. */
 		unsigned int valueNumberSinceSequenceStart;
 
@@ -48,6 +51,13 @@ namespace smeyel
 		/** Removes any states or input sequences stored in internal buffers. */
 		void startNewSequence();
 
+		// Used by runlengthEncodeSequence();
+		unsigned int appendEncodedTimes(unsigned int *target, unsigned int value, unsigned int runlength);
+
+		// May be used by addValue and getScoreForValue
+		// Uses lengthEncodingOutputBuffer as output. Length of output is the return value.
+		unsigned int runlengthEncodeSequence();
+
 		/**	Adds a new value to the sequence.
 			Call this function with every input sequence element to create the statistic.
 			@param	inputValue	The value of the next element of the sequence the statistic is based on.
@@ -66,8 +76,10 @@ namespace smeyel
 		unsigned char lastValue;
 		/** Was the last received value inside the target area? */
 		bool lastIsTargetArea;
+
 		/** Number of times the last value is continuously repeated. */
-		int runLength;
+		//int runLength;
+
 		/** The last valid score. */
 		unsigned char lastScore;
 		/** Like addValue(), but adds a runlength quantizing feature. */
@@ -78,10 +90,11 @@ namespace smeyel
 		void checkNode(SequenceCounterTreeNode *node, float sumOn, float sumOff, int maxInputValue, notifycallbackPtr callback);
 
 	public:
+		static bool useRunLengthEncoding;
+
 		/** Feeds a CV_81C1 (like LUT) image using addValue pixel-by-pixel. */
 		void addImage(cv::Mat &image, bool isOn);
-		/** Retrieves the score with getScoreForValue() for every pixel. */
-		void getScoreMaskForImage(cv::Mat &src, cv::Mat &dst);
+		void addImage(cv::Mat &image, cv::Rect &onRect);
 
 		/** When training a classifier using checkNode(), the minimal required precision for suitablility. */
 		float trainMinPrecision;
@@ -89,6 +102,12 @@ namespace smeyel
 		int trainMinSampleNum;
 		/** Uses checkNode() to find suitable classifier sequences to recognize the target area. */
 		void findClassifierSequences(notifycallbackPtr callback);
+
+		/** Retrieves the score with getScoreForValue() for every pixel. */
+		void getScoreMaskForImage(cv::Mat &src, cv::Mat &dst);
+
+		// ----------- Debug helpers
+		void showBufferContent(const char *bufferName, unsigned int *buffer, unsigned int length);
 	};
 }
 
