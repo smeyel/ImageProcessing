@@ -1,3 +1,6 @@
+#include <sstream>
+
+#include "Logger.h"
 #include "TransitionStat.h"
 
 using namespace smeyel;
@@ -50,6 +53,7 @@ unsigned int TransitionStat::appendEncodedTimes(unsigned int *target, unsigned i
 	if (runlength>=5)	encodedRunLength = 1;
 	if (runlength>=10)	encodedRunLength = 2;
 	if (runlength>=20)	encodedRunLength = 3;
+	if (runlength>=50)	encodedRunLength = 4;
 	for (int i=0; i<encodedRunLength; i++)
 	{
 		*target = value;
@@ -120,8 +124,23 @@ void TransitionStat::addValue(const unsigned int inputValue, const bool isTarget
 			unsigned int length = runlengthEncodeSequence();
 			// Debug
 			//showBufferContent("LenEncoded",lengthEncodingOutputBuffer,length);
-
 			node = counterTreeRoot->getNode(lengthEncodingOutputBuffer,length,true);
+
+			// DEBUG
+/*			if (isTargetArea)
+			{
+				int oldOnCnt = node->getCounter(COUNTERIDX_ON);
+				int oldOffCnt = node->getCounter(COUNTERIDX_OFF);
+				stringstream ss;
+				for(int i=0; i<length; i++)
+				{
+					ss << (int)(lengthEncodingOutputBuffer[i]);
+				}
+				string str = ss.str();
+				const char *strPtr = str.c_str(); 
+				LogConfigTime::Logger::getInstance()->Log(LogConfigTime::Logger::LOGLEVEL_VERBOSE,"addValue","INC %s for seq: %s, old cnt(on/off):%d/%d\n",(isTargetArea?"ON":"OFF"),strPtr,oldOnCnt,oldOffCnt);
+			}*/
+			// END OF DEBUG
 		}
 		else
 		{
@@ -275,8 +294,8 @@ void TransitionStat::verboseScoreForImageLocation(Mat &src, Point pointToCheck)
 	node = counterTreeRoot->getNode(lengthEncodingOutputBuffer,length,true);
 	if (node)
 	{
-		cout << "Node status=" << node->status << ", auxScore=" << (int)(node->auxScore) << endl;
-		cout << "Node aux score is: " << (int)(node->auxScore) << endl;
+		cout << "Node status=" << node->status << ", auxScore=" << (int)(node->auxScore);
+		cout << ", counters(on/off): " << node->getCounter(COUNTERIDX_ON) << "/" << node->getCounter(COUNTERIDX_OFF) << endl;
 	}
 	else
 	{

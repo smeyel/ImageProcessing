@@ -14,18 +14,9 @@ FsmLearner::FsmLearner(const unsigned int inputValueNumber, const unsigned int m
 
 float FsmLearner::getNodePrecision(SequenceCounterTreeNode *node)
 {
-	int onRootNum = counterTreeRoot->getCounter(COUNTERIDX_ON);
-	int offRootNum = counterTreeRoot->getCounter(COUNTERIDX_OFF);
-	int onNum = node->getCounter(COUNTERIDX_ON);
-	int offNum = node->getCounter(COUNTERIDX_OFF);
-
-	// The overall counter numbers for the two counters may be
-	//	very different due to imbalances of the training sets,
-	//	so relative on/off rates are used.
-	float onRate = (float)onNum / (float)onRootNum;
-	float offRate = (float)offNum / (float)offRootNum;
-	float precision = onRate / (onRate+offRate);
-
+	float onNum = (float)node->getCounter(COUNTERIDX_ON);
+	float offNum = (float)node->getCounter(COUNTERIDX_OFF);
+	float precision = onNum / (onNum+offNum);
 	return precision;
 }
 
