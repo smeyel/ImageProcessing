@@ -233,6 +233,33 @@ void TransitionStat::addImage(Mat &image, Rect &onRect)
 	}	// end for row
 }
 
+void TransitionStat::addImageWithMask(cv::Mat &image, cv::Mat &mask)
+{
+	// Assert for only 8UC1 output images
+	OPENCV_ASSERT(image.type() == CV_8UC1,"addImageWithMask","Image type is not CV_8UC1");
+	OPENCV_ASSERT(mask.type() == CV_8UC1,"addImageWithMask","Mask type is not CV_8UC1");
+
+	// Go along every pixel and do the following:
+	for (int row=0; row<image.rows; row++)
+	{
+		// Calculate pointer to the beginning of the current row
+		const uchar *imgPtr = (const uchar *)(image.data + row*image.step);
+		const uchar *maskPtr = (const uchar *)(mask.data + row*mask.step);
+		
+		// Sequences are restarted at the beginning of every image row.
+		startNewSequence();
+		// Go along every BGR colorspace pixel
+		for (int col=0; col<image.cols; col++)
+		{
+			unsigned char imageValue = *imgPtr++;
+			unsigned char maskValue = *maskPtr++;
+			bool isOn = (maskValue==255);
+
+			addValue(imageValue,isOn);
+		}	// end for col
+	}	// end for row
+}
+
 void TransitionStat::getScoreMaskForImage(Mat &src, Mat &dst)
 {
 	// Assert for only 8UC1 output images

@@ -95,6 +95,7 @@ namespace smeyel
 		/** Feeds a CV_81C1 (like LUT) image using addValue pixel-by-pixel. */
 		void addImage(cv::Mat &image, bool isOn);
 		void addImage(cv::Mat &image, cv::Rect &onRect);
+		void addImageWithMask(cv::Mat &image, cv::Mat &mask);
 
 		/** When training a classifier using checkNode(), the minimal required precision for suitablility. */
 		float trainMinPrecision;
