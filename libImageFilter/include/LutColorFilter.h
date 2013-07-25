@@ -59,26 +59,64 @@ namespace smeyel
 		void SetInverseLut(uchar colorCode, uchar r, uchar g, uchar b);
 
 		// --- Aux helper functions
+		/** @defgroup group1 Helper functions
+		 *  These functions are used to gain deeper control over the LUT.
+		 *  @{
+		 */
+
+		/** Returns the RGB values corresponding to a given LUT index
+			@param	lutIdx	LUT Index
+			@param	r	Red component (by reference)
+			@param	g	Green component (by reference)
+			@param	b	Blue component (by reference)
+		*/
 		void idx2rgb(unsigned int lutIdx, unsigned char &r, unsigned char &g, unsigned char &b);
 
+		/** Calculates LUT index for given RGB value
+			@param	r	Red component
+			@param	g	Green component
+			@param	b	Blue component
+			@return		The LUT index
+		*/
 		unsigned int rgb2idx(unsigned char r, unsigned char g, unsigned char b);
 
 		unsigned char idx2lutValue(unsigned int lutIdx);
 
+		/** Converts an RGB value to another one which is really seen by the LUT after quantizing.
+			@param	rOld	Original red component
+			@param	gOld	Original green component
+			@param	bOld	Original blue component
+			@param	rNew	New red component (by reference)
+			@param	gNew	New green component (by reference)
+			@param	bNew	New blue component (by reference)
+		*/
 		void quantizeRgb(unsigned char rOld, unsigned char gOld, unsigned char bOld, unsigned char &rNew, unsigned char &gNew, unsigned char &bNew);
 
+		/** Returns the LUT value for given RGB value.
+			@param	r	Red component
+			@param	g	Green component
+			@param	b	Blue component
+			@return		The value retrieved from the LUT.
+		*/
 		unsigned char rgb2lutValue(unsigned char r, unsigned char g, unsigned char b);
 
+		/** Saves the LUT into a file.
+			@param filename	The name of the file.
+		*/
 		void save(const char *filename);
 
+		/** Loads the LUT from a file.
+			@param filename	The name of the file.
+		*/
 		void load(const char *filename);
 
-		void setLutItemByIdx(unsigned int idx, unsigned char value)
-		{
-			this->RgbLut[idx] = value;
-		}
+		/** Set LUT value for a given index.
+			@param idx		LUT element index to change
+			@param value	The new value.
+		*/
+		void setLutItemByIdx(unsigned int idx, unsigned char value);
 
-
+		/** @} */
 	};
 }
 

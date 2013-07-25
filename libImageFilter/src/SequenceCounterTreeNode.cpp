@@ -110,13 +110,13 @@ int SequenceCounterTreeNode::getSubtreeSumCounter(int counterIdx)
 	return sum;
 }
 
-/** Overwrites counter of current node with sum of children, except if there are no children (or sum is 0). */
+/** Does not modify counter of current node. */
 int SequenceCounterTreeNode::calculateSubtreeCounters(int counterIdx)
 {
 	OPENCV_ASSERT(counterIdx<MAXNODECOUNTERNUM,"SequenceCounterTreeNode.calculateSubtreeCounters","Counter IDX > max!");
 	OPENCV_ASSERT(counterIdx>=0,"SequenceCounterTreeNode.calculateSubtreeCounters","Counter IDX negative!");
 
-	int childrenSum=0;
+	int childrenSum=counter[counterIdx];
 	for(int i=0; i<inputValueNumber; i++)
 	{
 		if (children[i]!=NULL)
@@ -125,12 +125,12 @@ int SequenceCounterTreeNode::calculateSubtreeCounters(int counterIdx)
 		}
 	}
 
-	if (childrenSum>0)
+/*	if (childrenSum>0)
 	{
 		counter[counterIdx] += childrenSum;	// Uses += as internal nodes may have been used as sequence ending node, thus local counter is not necessarily 0.
-	}
+	} */
 
-	return counter[counterIdx];
+	return childrenSum;
 }
 
 void SequenceCounterTreeNode::multiplySubtreeCounters(int counterIdx, float multiplier)

@@ -370,3 +370,8 @@ void LutColorFilter::load(const char *filename)
 	}
 	file.close();
 }
+
+void LutColorFilter::setLutItemByIdx(unsigned int idx, unsigned char value)
+{
+	this->RgbLut[idx] = value;
+}
