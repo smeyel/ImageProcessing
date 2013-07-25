@@ -57,6 +57,28 @@ namespace smeyel
 		void InverseLut(cv::Mat &src, cv::Mat &dst);
 		void InitInverseLut(uchar r, uchar g, uchar b);
 		void SetInverseLut(uchar colorCode, uchar r, uchar g, uchar b);
+
+		// --- Aux helper functions
+		void idx2rgb(unsigned int lutIdx, unsigned char &r, unsigned char &g, unsigned char &b);
+
+		unsigned int rgb2idx(unsigned char r, unsigned char g, unsigned char b);
+
+		unsigned char idx2lutValue(unsigned int lutIdx);
+
+		void quantizeRgb(unsigned char rOld, unsigned char gOld, unsigned char bOld, unsigned char &rNew, unsigned char &gNew, unsigned char &bNew);
+
+		unsigned char rgb2lutValue(unsigned char r, unsigned char g, unsigned char b);
+
+		void save(const char *filename);
+
+		void load(const char *filename);
+
+		void setLutItemByIdx(unsigned int idx, unsigned char value)
+		{
+			this->RgbLut[idx] = value;
+		}
+
+
 	};
 }
 

@@ -1,3 +1,4 @@
+#include <fstream>
 #include "LutColorFilter.h"
 
 using namespace smeyel;
@@ -29,10 +30,7 @@ void LutColorFilter::InitLut(uchar colorCode)
 
 void LutColorFilter::SetLutItem(uchar r, uchar g, uchar b, uchar colorCode)
 {
-	unsigned int idxR = r >> 5;
-	unsigned int idxG = g >> 5;
-	unsigned int idxB = b >> 5;
-	unsigned int idx = (idxR << 6) | (idxG << 3) | idxB;
+	unsigned int idx = rgb2idx(r,g,b);
 	RgbLut[idx] = colorCode;
 }
 
@@ -314,4 +312,61 @@ void LutColorFilter::SetInverseLut(uchar colorCode, uchar r, uchar g, uchar b)
 	inverseLut[colorCode*3+0]=r;
 	inverseLut[colorCode*3+1]=g;
 	inverseLut[colorCode*3+2]=b;
+}
+
+// --- Aux helper functions
+void LutColorFilter::idx2rgb(unsigned int lutIdx, unsigned char &r, unsigned char &g, unsigned char &b)
+{
+	r = (lutIdx >> 6) << 5;
+	g = ((lutIdx >> 3) & 0x07) << 5;
+	b = (lutIdx & 0x07) << 5;
+}
+
+unsigned int LutColorFilter::rgb2idx(unsigned char r, unsigned char g, unsigned char b)
+{
+	unsigned int idxR = r >> 5;
+	unsigned int idxG = g >> 5;
+	unsigned int idxB = b >> 5;
+	return (idxR << 6) | (idxG << 3) | idxB;
+}
+
+unsigned char LutColorFilter::idx2lutValue(unsigned int lutIdx)
+{
+	return RgbLut[lutIdx];
+}
+
+void LutColorFilter::quantizeRgb(unsigned char rOld, unsigned char gOld, unsigned char bOld, unsigned char &rNew, unsigned char &gNew, unsigned char &bNew)
+{
+	unsigned int lutIdx = rgb2idx(rOld, gOld, bOld);
+	idx2rgb(lutIdx,rNew,gNew,bNew);
+}
+
+unsigned char LutColorFilter::rgb2lutValue(unsigned char r, unsigned char g, unsigned char b)
+{
+	unsigned int idx = rgb2idx(r,g,b);
+	return idx2lutValue(idx);
+}
+
+void LutColorFilter::save(const char *filename)
+{
+	std::ofstream file;
+	file.open(filename);
+	for(int i=0; i<512; i++)
+	{
+		file << (int)this->RgbLut[i] << " ";
+	}
+	file.close();
+}
+
+void LutColorFilter::load(const char *filename)
+{
+	std::ifstream file;
+	file.open(filename);
+	int value;
+	for(int i=0; i<512; i++)
+	{
+		file >> value;
+		this->RgbLut[i] = (unsigned char)value;
+	}
+	file.close();
 }
