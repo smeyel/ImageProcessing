@@ -3,6 +3,7 @@
 //#include <opencv2/core/core.hpp>        // Basic OpenCV structures (cv::Mat)
 
 #include "SequenceCounterTreeNode.h"
+#include "RunLengthTransform.h"
 
 using namespace smeyel;
 
@@ -27,9 +28,6 @@ namespace smeyel
 		/** The length of history taken into account (order of Markov Chain) */
 		unsigned int markovChainOrder;
 
-		/** Used by getLengthEncodedSequence() as output buffer.*/
-		unsigned int *lengthEncodingOutputBuffer;
-
 		/** Used to decide whether initial values are still in the lastValues array. */
 		unsigned int valueNumberSinceSequenceStart;
 
@@ -38,25 +36,21 @@ namespace smeyel
 		SequenceCounterTreeNode *counterTreeRoot;
 
 	public:
+		RunLengthTransform runLengthTransform;
+
 		/**
 			@param inputValueNumber	The number of possible input values, also the maximal input value + 1.
 			@param markovChainOrder	The length of history taken into account (order of Markov Chain)
 			@param initialValue		Inputs prior to first added value are considered to be this value.
 				Similar to assumed color of pixels outside the image boundaries.
 		*/
-		TransitionStat(const unsigned int inputValueNumber, const unsigned int markovChainOrder, const unsigned int initialValue);
+		TransitionStat(const unsigned int inputValueNumber, const unsigned int markovChainOrder, const unsigned int initialValue, const char *runLengthTransformConfigFile = NULL);
 
 		~TransitionStat();
 
+
 		/** Removes any states or input sequences stored in internal buffers. */
 		void startNewSequence();
-
-		// Used by runlengthEncodeSequence();
-		unsigned int appendEncodedTimes(unsigned int *target, unsigned int value, unsigned int runlength);
-
-		// May be used by addValue and getScoreForValue
-		// Uses lengthEncodingOutputBuffer as output. Length of output is the return value.
-		unsigned int runlengthEncodeSequence();
 
 		/**	Adds a new value to the sequence.
 			Call this function with every input sequence element to create the statistic.

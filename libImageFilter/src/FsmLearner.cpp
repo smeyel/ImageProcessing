@@ -3,8 +3,8 @@
 using namespace smeyel;
 using namespace cv;
 
-FsmLearner::FsmLearner(const unsigned int inputValueNumber, const unsigned int markovChainOrder, const unsigned int initialValue)
-	: TransitionStat(inputValueNumber, markovChainOrder, initialValue)
+FsmLearner::FsmLearner(const unsigned int inputValueNumber, const unsigned int markovChainOrder, const unsigned int initialValue, const char *runLengthTransformConfigFile)
+	: TransitionStat(inputValueNumber, markovChainOrder, initialValue, runLengthTransformConfigFile)
 {
 	trainMinPrecision=0.9F;
 	trainMinSampleNum=50;

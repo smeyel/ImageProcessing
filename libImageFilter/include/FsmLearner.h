@@ -28,8 +28,10 @@ namespace smeyel
 			@param markovChainOrder	The length of history taken into account (order of Markov Chain)
 			@param initialValue		Inputs prior to first added value are considered to be this value.
 				Similar to assumed color of pixels outside the image boundaries.
+			@param runLengthTransformConfigFile	Optional config file name for TransitionStat.RunLengthTransform.
+				If omitted, this->runLengthTransform.load() has to be used.
 		*/
-		FsmLearner(const unsigned int inputValueNumber, const unsigned int markovChainOrder, const unsigned int initialValue);
+		FsmLearner(const unsigned int inputValueNumber, const unsigned int markovChainOrder, const unsigned int initialValue, const char *runLengthTransformConfigFile = NULL);
 
 	private:
 		/** Check whether two nodes can be combined together while maintaining minPrecision.

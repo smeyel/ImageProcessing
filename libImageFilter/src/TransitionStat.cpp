@@ -8,14 +8,21 @@ using namespace cv;
 
 bool TransitionStat::useRunLengthEncoding = true;
 
-TransitionStat::TransitionStat(const unsigned int inputValueNumber, const unsigned int markovChainOrder, const unsigned int initialValue)
+TransitionStat::TransitionStat(const unsigned int inputValueNumber, const unsigned int markovChainOrder, const unsigned int initialValue, const char *runLengthTransformConfigFile)
 {
 	counterTreeRoot = new SequenceCounterTreeNode(inputValueNumber);
 	lastValues = new unsigned int[markovChainOrder];
-	lengthEncodingOutputBuffer = new unsigned int[markovChainOrder];
 	this->inputValueNumber = inputValueNumber;
 	this->markovChainOrder = markovChainOrder;
 	this->initialValue = initialValue;
+
+	this->runLengthTransform.createInternalOutputBuffer(markovChainOrder);
+	this->runLengthTransform.setInputBuffer(this->lastValues,markovChainOrder);
+
+	if (runLengthTransformConfigFile != NULL)
+	{
+		this->runLengthTransform.load(runLengthTransformConfigFile);
+	}
 
 	startNewSequence();
 
@@ -26,17 +33,14 @@ TransitionStat::TransitionStat(const unsigned int inputValueNumber, const unsign
 
 	trainMinPrecision=0.9F;
 	trainMinSampleNum=50;
-
 }
 
 TransitionStat::~TransitionStat()
 {
 	delete counterTreeRoot;
 	delete lastValues;
-	delete lengthEncodingOutputBuffer;
 	counterTreeRoot = NULL;
 	lastValues = NULL;
-	lengthEncodingOutputBuffer = NULL;
 }
 
 void TransitionStat::startNewSequence()
@@ -44,57 +48,6 @@ void TransitionStat::startNewSequence()
 	for(unsigned int i=0; i<markovChainOrder; i++)
 		lastValues[i]=initialValue;
 	valueNumberSinceSequenceStart=0;
-}
-
-unsigned int TransitionStat::appendEncodedTimes(unsigned int *target, unsigned int value, unsigned int runlength)
-{
-	// Write to output a changed number of lastValue-s.
-	int encodedRunLength = 0;
-	if (runlength>=5)	encodedRunLength = 1;
-	if (runlength>=10)	encodedRunLength = 2;
-	if (runlength>=20)	encodedRunLength = 3;
-	if (runlength>=50)	encodedRunLength = 4;
-	for (int i=0; i<encodedRunLength; i++)
-	{
-		*target = value;
-		target++;
-	}
-	return encodedRunLength;
-}
-
-// Use by addValue and getScoreForValue
-unsigned int TransitionStat::runlengthEncodeSequence()
-{
-	// Transforms the input into the output buffer.
-	// The length of internal homogeneous value sequences are encoded into a few distinct values.
-	unsigned int *inputBuffer = this->lastValues;
-	unsigned int *outputBuffer = this->lengthEncodingOutputBuffer;
-
-	unsigned int targetLength = 0;
-	unsigned int prevValue = *inputBuffer;
-	unsigned int runlength = 0;
-	for(int i=0; i<this->markovChainOrder; i++)
-	{
-		if (inputBuffer[i]==prevValue)
-		{
-			runlength++;
-		}
-		else
-		{
-			unsigned int encodedRunLength = appendEncodedTimes(outputBuffer,prevValue,runlength);
-			targetLength += encodedRunLength;
-			outputBuffer += encodedRunLength;
-
-			// Update lastValues
-			prevValue = inputBuffer[i];
-			runlength = 1;
-		}
-	}
-
-	unsigned int encodedRunLength = appendEncodedTimes(outputBuffer,prevValue,runlength);
-	targetLength += encodedRunLength;
-
-	return targetLength;
 }
 
 /**	Adds a new value to the sequence.
@@ -121,10 +74,12 @@ void TransitionStat::addValue(const unsigned int inputValue, const bool isTarget
 			// Debug
 			//showBufferContent("LastValues",lastValues,markovChainOrder);
 
-			unsigned int length = runlengthEncodeSequence();
+			// Encode runlength
+			// Input and output buffers already set up in the constructor.
+			unsigned int length = this->runLengthTransform.runlengthEncodeSequence();
 			// Debug
 			//showBufferContent("LenEncoded",lengthEncodingOutputBuffer,length);
-			node = counterTreeRoot->getNode(lengthEncodingOutputBuffer,length,true);
+			node = counterTreeRoot->getNode(this->runLengthTransform.getInternalOutputBuffer(),length,true);
 
 			// DEBUG
 /*			if (isTargetArea)
@@ -168,8 +123,8 @@ unsigned char TransitionStat::getScoreForValue(const unsigned int inputValue)
 
 		if (useRunLengthEncoding)
 		{
-			unsigned int length = runlengthEncodeSequence();
-			node = counterTreeRoot->getNode(lengthEncodingOutputBuffer,length,true);
+			unsigned int length = this->runLengthTransform.runlengthEncodeSequence();
+			node = counterTreeRoot->getNode(this->runLengthTransform.getInternalOutputBuffer(),length,true);
 		}
 		else
 		{
@@ -315,10 +270,10 @@ void TransitionStat::verboseScoreForImageLocation(Mat &src, Point pointToCheck)
 
 	cout << "Source and encoded buffer values:" << endl;
 	showBufferContent("LastValues",lastValues,markovChainOrder);
-	unsigned int length = runlengthEncodeSequence();
-	showBufferContent("LenEncoded",lengthEncodingOutputBuffer,length);
+	unsigned int length = this->runLengthTransform.runlengthEncodeSequence();
+	showBufferContent("LenEncoded",this->runLengthTransform.getInternalOutputBuffer(),length);
 
-	node = counterTreeRoot->getNode(lengthEncodingOutputBuffer,length,true);
+	node = counterTreeRoot->getNode(this->runLengthTransform.getInternalOutputBuffer(),length,true);
 	if (node)
 	{
 		cout << "Node status=" << node->status << ", auxScore=" << (int)(node->auxScore);
