@@ -6,6 +6,12 @@
 using namespace cv;
 using namespace smeyel;
 
+ImageTransitionStat::ImageTransitionStat(const unsigned int inputValueNumber, const unsigned int markovChainOrder, const char *runLengthTransformConfigFile)
+	: TransitionStat(inputValueNumber, markovChainOrder, runLengthTransformConfigFile)
+{
+}
+
+
 // Deprecated, use addImage(image,onRect) instead!
 void ImageTransitionStat::addImage(Mat &image, bool isOn)
 {
@@ -108,7 +114,7 @@ void ImageTransitionStat::verboseScoreForImageLocation(Mat &src, Point pointToCh
 
 	cout << "Source and encoded buffer values:" << endl;
 	showBufferContent("LastValues",lastValues,markovChainOrder);
-	unsigned int length = this->runLengthTransform.runlengthEncodeSequence();
+	unsigned int length = this->runLengthTransform.transform();
 	showBufferContent("LenEncoded",this->runLengthTransform.getInternalOutputBuffer(),length);
 
 	node = counterTreeRoot->getNode(this->runLengthTransform.getInternalOutputBuffer(),length,true);

@@ -67,7 +67,7 @@ void TransitionStat::addValue(const unsigned int inputValue, const bool isTarget
 
 			// Encode runlength
 			// Input and output buffers already set up in the constructor.
-			unsigned int length = this->runLengthTransform.runlengthEncodeSequence();
+			unsigned int length = this->runLengthTransform.transform();
 			// Debug
 			//showBufferContent("LenEncoded",lengthEncodingOutputBuffer,length);
 			node = counterTreeRoot->getNode(this->runLengthTransform.getInternalOutputBuffer(),length,true);
@@ -114,7 +114,7 @@ unsigned char TransitionStat::getScoreForValue(const unsigned int inputValue)
 
 		if (useRunLengthEncoding)
 		{
-			unsigned int length = this->runLengthTransform.runlengthEncodeSequence();
+			unsigned int length = this->runLengthTransform.transform();
 			node = counterTreeRoot->getNode(this->runLengthTransform.getInternalOutputBuffer(),length,true);
 		}
 		else

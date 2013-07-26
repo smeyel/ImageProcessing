@@ -81,13 +81,13 @@ void RunLengthTransform::setInputBuffer(unsigned int *inputBuffer, int inputBuff
 	this->inputBufferSize = inputBufferSize;
 }
 
-unsigned int RunLengthTransform::runlengthEncodeSequence()
+unsigned int RunLengthTransform::transform()
 {
-	return runlengthEncodeSequence(inputBufferPtr, inputBufferSize, internalOutputBuffer, outputBufferSize);
+	return transform(inputBufferPtr, inputBufferSize, internalOutputBuffer, outputBufferSize);
 }
 
 // Use by addValue and getScoreForValue
-unsigned int RunLengthTransform::runlengthEncodeSequence(unsigned int *inputBuffer, int inputLength, unsigned int *outputBuffer, int maxOutputLength)
+unsigned int RunLengthTransform::transform(unsigned int *inputBuffer, int inputLength, unsigned int *outputBuffer, int maxOutputLength)
 {
 	// Transforms the input into the output buffer.
 	// The length of internal homogeneous value sequences are encoded into a few distinct values.

@@ -7,6 +7,8 @@
 
 namespace smeyel
 {
+	/** Uses a PixelScoreSource to assign its score to every pixel of an image.
+	*/
 	class PixelScoreImageTransform
 	{
 		PixelScoreSource *source;

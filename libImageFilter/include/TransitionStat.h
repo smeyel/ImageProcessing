@@ -17,7 +17,8 @@ typedef void (*notifycallbackPtr)(SequenceCounterTreeNode *node, float precision
 
 namespace smeyel
 {
-	/** Used to calculate a transition probability statistic from a sequence of values. */
+	/** Used to calculate the occurrence numbers of various value transition sequences. */
+	// TODO: rename to SequenceStat, together with "ImagePixelSequenceStat" from ImageTransitionStat
 	class TransitionStat : public PixelScoreSource
 	{
 	protected:
