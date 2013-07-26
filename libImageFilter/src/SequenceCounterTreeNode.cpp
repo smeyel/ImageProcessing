@@ -355,3 +355,9 @@ bool SequenceCounterTreeNode::cut(unsigned int parentStatus)
 	//cout << "Cut@" << this->nodeID << " not removeable" << endl;
 	return false;
 }
+
+
+int SequenceCounterTreeNode::getSumCreatedNodeNumber()
+{
+	return nextFreeNodeID;
+}

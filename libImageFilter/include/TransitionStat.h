@@ -4,10 +4,12 @@
 
 #include "SequenceCounterTreeNode.h"
 #include "RunLengthTransform.h"
+#include "PixelScoreSource.h"
 
 using namespace smeyel;
 
 // Type of callback for promising nodes
+// TODO: needed?
 typedef void (*notifycallbackPtr)(SequenceCounterTreeNode *node, float precision);
 
 #define COUNTERIDX_ON		0
@@ -16,16 +18,17 @@ typedef void (*notifycallbackPtr)(SequenceCounterTreeNode *node, float precision
 namespace smeyel
 {
 	/** Used to calculate a transition probability statistic from a sequence of values. */
-	class TransitionStat
+	class TransitionStat : public PixelScoreSource
 	{
 	protected:
 		/** Array containing the last input values. Length corresponds the order of the markov chain. */
 		unsigned int *lastValues;
 		/** Input values considered before the first input. */
-		unsigned int initialValue;
+		// TODO: not needed? getScoreForValue() returns 0 in such cases...
+		//unsigned int initialValue;
 		/** The number of possible input values, also the maximal input value + 1. */
 		unsigned int inputValueNumber;
-		/** The length of history taken into account (order of Markov Chain) */
+		/** The length of history taken into account (order of Markov Chain), size of lastValues array. */
 		unsigned int markovChainOrder;
 
 		/** Used to decide whether initial values are still in the lastValues array. */
@@ -44,13 +47,21 @@ namespace smeyel
 			@param initialValue		Inputs prior to first added value are considered to be this value.
 				Similar to assumed color of pixels outside the image boundaries.
 		*/
-		TransitionStat(const unsigned int inputValueNumber, const unsigned int markovChainOrder, const unsigned int initialValue, const char *runLengthTransformConfigFile = NULL);
+		TransitionStat(const unsigned int inputValueNumber, const unsigned int markovChainOrder, const char *runLengthTransformConfigFile = NULL);
 
 		~TransitionStat();
 
-
+		/** PixelScoreSource members
+			@{
+		*/
 		/** Removes any states or input sequences stored in internal buffers. */
-		void startNewSequence();
+		virtual void startNewSequence();
+
+		/** Using incrementally just like addValue(), it returns the
+			auxiliary score value of the next node.
+		*/
+		virtual unsigned char getScoreForValue(unsigned int inputValue);
+		/** }@ */
 
 		/**	Adds a new value to the sequence.
 			Call this function with every input sequence element to create the statistic.
@@ -59,49 +70,17 @@ namespace smeyel
 		*/
 		void addValue(const unsigned int inputValue, const bool isTargetArea);
 
-		/** Using incrementally just like addValue(), it returns the
-			auxiliary score value of the next node.
-		*/
-		unsigned char getScoreForValue(const unsigned int inputValue);
-
 		// --- Higher level functions
-	private:
-		/** */
-		unsigned char lastValue;
-		/** Was the last received value inside the target area? */
-		bool lastIsTargetArea;
-
-		/** Number of times the last value is continuously repeated. */
-		//int runLength;
-
-		/** The last valid score. */
-		unsigned char lastScore;
-		/** Like addValue(), but adds a runlength quantizing feature. */
-		void addRunLengthQuantizedValue(unsigned char value, bool isTargetArea);
-		/** getScoreForValue() replacement for the quantized runlength case. */
-		unsigned char getScoreForRunLengthQuantizedValue(unsigned char value);
-		/** Checks wether the given node is a suitable classifier between target and background areas. */
-		void checkNode(SequenceCounterTreeNode *node, float sumOn, float sumOff, int maxInputValue, notifycallbackPtr callback);
+		void balanceCounter(unsigned int balancedCounterIdx, unsigned int withRespectToCounterIdx)
+		{
+			float onSum = (float)counterTreeRoot->calculateSubtreeCounters(balancedCounterIdx);
+			float offSum = (float)counterTreeRoot->calculateSubtreeCounters(withRespectToCounterIdx);
+			float multiplier = offSum / onSum;
+			counterTreeRoot->multiplySubtreeCounters(balancedCounterIdx, multiplier);
+		}
 
 	public:
 		static bool useRunLengthEncoding;
-
-		/** Feeds a CV_81C1 (like LUT) image using addValue pixel-by-pixel. */
-		void addImage(cv::Mat &image, bool isOn);
-		void addImage(cv::Mat &image, cv::Rect &onRect);
-		void addImageWithMask(cv::Mat &image, cv::Mat &mask);
-
-		/** When training a classifier using checkNode(), the minimal required precision for suitablility. */
-		float trainMinPrecision;
-		/** Used by checkNode(), the minimal number of samples for suitablility. */
-		int trainMinSampleNum;
-		/** Uses checkNode() to find suitable classifier sequences to recognize the target area. */
-		void findClassifierSequences(notifycallbackPtr callback);
-
-		/** Retrieves the score with getScoreForValue() for every pixel. */
-		void getScoreMaskForImage(cv::Mat &src, cv::Mat &dst);
-
-		void verboseScoreForImageLocation(cv::Mat &src, cv::Point pointToCheck);
 
 		// ----------- Debug helpers
 		void showBufferContent(const char *bufferName, unsigned int *buffer, unsigned int length);

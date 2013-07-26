@@ -76,12 +76,14 @@ namespace smeyel
 		int getSubtreeSumCounter(int counterIdx);
 
 		/** Overwrites counter of current node with sum of children, except if there are no children (or sum is 0). */
+		// TODO: needed?
 		int calculateSubtreeCounters(int counterIdx);
 
 		/** Multiplies given counter with multiplier in the whole subtree. */
 		void multiplySubtreeCounters(int counterIdx, float multiplier);
 
 		/** Shows the subtree of the node recursively on cout. */
+		// TODO: needed?
 		void showRecursive(int indent, int maxCounterIdx, bool showNullChildren);
 
 		/** Similar to showRecursive, but the representation is more compact. */
@@ -102,6 +104,7 @@ namespace smeyel
 		/** Clears all child node pointers.
 			@warning The destructor deletes all child nodes, so if that is not the desired behaviour, call this before delete!
 		*/
+		// TODO: needed?
 		void disconnectAllChildren()
 		{
 			for(int i=0; i<inputValueNumber; i++)
@@ -118,22 +121,26 @@ namespace smeyel
 		/** Replaces oldNode with newNode among the child pointers.
 			Used by redirectParents(). 
 		*/
+		// TODO: needed?
 		void replaceChildPointer(SequenceCounterTreeNode *oldNode, SequenceCounterTreeNode *newNode);
 		
 		/** Redirects all pointers pointing to oldNode with newNode. Processes the subtree of startNode.
 			Used by combineNodes
 		*/
+		// TODO: needed?
 		static void redirectParents(SequenceCounterTreeNode *startNode,SequenceCounterTreeNode *oldNode,SequenceCounterTreeNode *newNode);
 		/** Asks for a node representing the merge of nodeA and nodeB. If one of them is NULL, the other one will be returned.
 			If both exist, a new node is created.
 			@warning	Replaced nodes are not deleted!
 			Used by combineNodes.
 		*/
+		// TODO: needed?
 		static SequenceCounterTreeNode *getMergedNode(SequenceCounterTreeNode *root, SequenceCounterTreeNode *nodeA,SequenceCounterTreeNode *nodeB);
 	public:
 		/** Combines two nodes into one and updates the graph accordingly.
 			@warning Nodes not used anymore are not removed!
 		*/
+		// TODO: needed?
 		static void combineNodes(SequenceCounterTreeNode *root, SequenceCounterTreeNode *nodeA, SequenceCounterTreeNode *nodeB);
 
 	public:
@@ -144,13 +151,11 @@ namespace smeyel
 			@return true if the node can be removed as all children could be removed and its status is the same as the parents.
 			@warning: use only on real trees, not suitable for DAG-s!
 		*/
+		// TODO: needed?
 		bool cut(unsigned int parentStatus = 0);
 
 		// Only for info
-		static void showNodeNumber()
-		{
-			cout << "Current SequenceCounterTreeNode number is " << nextFreeNodeID << "." << endl;
-		}
+		static int getSumCreatedNodeNumber();
 	};
 }
 

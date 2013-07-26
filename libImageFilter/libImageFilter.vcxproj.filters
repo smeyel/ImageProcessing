@@ -36,10 +36,19 @@
     <ClInclude Include="include\TransitionStat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\FsmLearner.h">
+    <ClInclude Include="include\RunLengthTransform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\RunLengthTransform.h">
+    <ClInclude Include="include\PixelScoreImageTransform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ImageTransitionStat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PixelScoreSource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PixelPrecisionCalculator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -65,10 +74,16 @@
     <ClCompile Include="src\TransitionStat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\FsmLearner.cpp">
+    <ClCompile Include="src\RunLengthTransform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\RunLengthTransform.cpp">
+    <ClCompile Include="src\ImageTransitionStat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PixelScoreImageTransform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PixelPrecisionCalculator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
