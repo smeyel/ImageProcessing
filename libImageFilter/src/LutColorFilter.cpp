@@ -351,9 +351,18 @@ void LutColorFilter::save(const char *filename)
 {
 	std::ofstream file;
 	file.open(filename);
+	// Save LUT
 	for(int i=0; i<512; i++)
 	{
 		file << (int)this->RgbLut[i] << " ";
+	}
+	file << std::endl;
+	// Save inverse LUT
+	for(int i=0; i<256; i++)
+	{
+		file << (int)(inverseLut[i*3+0]) << " ";	// red
+		file << (int)(inverseLut[i*3+1]) << " ";	// green
+		file << (int)(inverseLut[i*3+2]) << std::endl;	// blue
 	}
 	file.close();
 }
@@ -368,6 +377,15 @@ void LutColorFilter::load(const char *filename)
 		file >> value;
 		this->RgbLut[i] = (unsigned char)value;
 	}
+/*	for(int i=0; i<256; i++)
+	{
+		for (int j=0; j<3; j++)	// R, G, B
+		{
+			file >> value;
+			inverseLut[i*3+j] = value;
+		}
+	}*/
+
 	file.close();
 }
 
