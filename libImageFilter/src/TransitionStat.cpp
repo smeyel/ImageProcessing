@@ -101,6 +101,7 @@ unsigned char TransitionStat::getScoreForValue(const unsigned int inputValue)
 		{
 			unsigned int length = this->runLengthTransform.transform();
 			node = counterTreeRoot->getNode(this->runLengthTransform.getInternalOutputBuffer(),length,true);
+			//TODO: node = counterTreeRoot->getNode(this->runLengthTransform.getInternalOutputBuffer(),length-1,true);
 		}
 		else
 		{
@@ -115,41 +116,6 @@ unsigned char TransitionStat::getScoreForValue(const unsigned int inputValue)
 
 	return 0;
 }
-
-
-
-// Used by findClassifierSequences() recursively.
-/*void TransitionStat::checkNode(SequenceCounterTreeNode *node, float sumOn, float sumOff, int maxInputValue, notifycallbackPtr callback)
-{
-	int onNum = node->getCounter(COUNTERIDX_ON);
-	int offNum = node->getCounter(COUNTERIDX_OFF);
-	int sumNum = onNum+offNum;
-	float onRate = (float)onNum / (float)sumOn;
-	float offRate = (float)offNum / (float)sumOff;
-	float precision = onRate / (onRate+offRate);
-	if (precision >= trainMinPrecision && sumNum>=trainMinSampleNum )
-	{
-		(*callback)(node, precision);
-	}
-	// Continue on children
-	for (int i=0; i<=maxInputValue; i++)
-	{
-		SequenceCounterTreeNode *child = node->getChildNode(i,false);
-		if (child)
-		{
-			checkNode(child,sumOn,sumOff,maxInputValue,callback);
-		}
-	}
-}
-
-void TransitionStat::findClassifierSequences(notifycallbackPtr callback)
-{
-	// Recursively go along every sequence and compare on/off frequencies
-	float sumOn = (float)counterTreeRoot->getCounter(COUNTERIDX_ON);
-	float sumOff = (float)counterTreeRoot->getCounter(COUNTERIDX_OFF);
-
-	checkNode(counterTreeRoot,sumOn,sumOff,7,callback);
-}*/
 
 void TransitionStat::showBufferContent(const char *bufferName, unsigned int *buffer, unsigned int length)
 {

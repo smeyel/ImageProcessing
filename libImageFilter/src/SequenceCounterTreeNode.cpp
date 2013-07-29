@@ -62,6 +62,11 @@ int SequenceCounterTreeNode::getInputValueForChild(SequenceCounterTreeNode *chil
 */
 SequenceCounterTreeNode *SequenceCounterTreeNode::getNode(const unsigned int *inputValues, const int numberOfValues, bool createIfNotExisting)
 {
+	if (numberOfValues < 0)
+	{
+		// This is strange but may be caused by omitted final codes after run length transformation.
+		return NULL;
+	}
 	if (numberOfValues == 0)
 	{
 		return this;

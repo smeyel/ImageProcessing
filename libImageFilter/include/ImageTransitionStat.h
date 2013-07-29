@@ -25,7 +25,7 @@ namespace smeyel
 		/** @} */
 
 		/** Retrieves the score with getScoreForValue() for every pixel. */
-		void getScoreMaskForImage(cv::Mat &src, cv::Mat &dst);
+		//void getScoreMaskForImage(cv::Mat &src, cv::Mat &dst);
 
 		/** Verboses the score calculation for a given image location to the standard output. */
 		void verboseScoreForImageLocation(cv::Mat &src, cv::Point pointToCheck);

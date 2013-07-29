@@ -5,6 +5,8 @@
 
 using namespace std;
 
+/** This class helps creating finite state machines manually (in the code).
+*/
 class FsmBuilder
 {
 	unsigned int *transitions;
