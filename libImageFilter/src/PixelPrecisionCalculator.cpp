@@ -22,17 +22,18 @@ void PixelPrecisionCalculator::setPrecisionStatus(SequenceCounterTreeNode *node,
 	if (precision >= minPrecision)
 	{
 		node->status = STATUS_HIGHPRECISION;
+		node->auxScore = (unsigned char)(128.0F + (precision-minPrecision)/(1.0F-minPrecision)*127.0F);
 	}
 	else
 	{
 		node->status = STATUS_LOWPRECISION;
+		node->auxScore = 0;
 	}
-	node->auxScore = (unsigned char)(128.0F + (precision-minPrecision)/(1.0F-minPrecision)*127.0F);
 
 	int n = node->getInputValueNumber();
 	// first, recursive call
 	for(int i=0; i<n; i++)
 	{
-		setPrecisionStatus(node->getChildNode(i), minPrecision);
+		setPrecisionStatus(node->getDirectChild(i), minPrecision);
 	}
 }

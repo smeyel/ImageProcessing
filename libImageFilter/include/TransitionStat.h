@@ -72,10 +72,20 @@ namespace smeyel
 		void addValue(const unsigned int inputValue, const bool isTargetArea);
 
 		// --- Higher level functions
-		void balanceCounter(unsigned int balancedCounterIdx, unsigned int withRespectToCounterIdx)
+		void balanceCounter(unsigned int balancedCounterIdx, unsigned int withRespectToCounterIdx, bool countsOnlyInLeaves=true)
 		{
-			float onSum = (float)counterTreeRoot->calculateSubtreeCounters(balancedCounterIdx);
-			float offSum = (float)counterTreeRoot->calculateSubtreeCounters(withRespectToCounterIdx);
+			float onSum;
+			float offSum;
+			if (countsOnlyInLeaves)
+			{
+				onSum = (float)counterTreeRoot->calculateSubtreeCounters(balancedCounterIdx);
+				offSum = (float)counterTreeRoot->calculateSubtreeCounters(withRespectToCounterIdx);
+			}
+			else
+			{
+				onSum = (float)counterTreeRoot->getCounter(balancedCounterIdx);
+				offSum = (float)counterTreeRoot->getCounter(withRespectToCounterIdx);
+			}
 			float multiplier = offSum / onSum;
 			counterTreeRoot->multiplySubtreeCounters(balancedCounterIdx, multiplier);
 		}

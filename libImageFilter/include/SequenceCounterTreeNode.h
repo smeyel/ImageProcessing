@@ -52,7 +52,7 @@ namespace smeyel
 			@param createIfNotPresent	If true, non-existing child nodes are created (on demand creating).
 			@return	The child node asked for, or NULL if it does not exist and createIfNotPresent==false.
 		*/
-		SequenceCounterTreeNode *getChildNode(const unsigned int inputValue, bool createIfNotPresent=false);
+		SequenceCounterTreeNode *getDirectChild(const unsigned int inputValue, bool createIfNotPresent=false);
 
 		/** Returns the input value for which the given child is assigned. */
 		int getInputValueForChild(SequenceCounterTreeNode *child);
@@ -68,6 +68,12 @@ namespace smeyel
 		/** Increments the values of the internal counter.
 			@param counterIdx Index of the counter to increment. Must be < MAXNODECOUNTERNUM. */
 		void incrementCounter(int counterIdx);
+
+		/** Increments all counters along a path.
+			Combines the operation of getNode and incrementCounter for every step.
+		*/
+		SequenceCounterTreeNode *incrementCountersAlongPath(const unsigned int *inputValues, const int numberOfValues, bool createIfNotExisting, int counterIdx);
+
 
 		/** Returns the value of the given counter. */
 		int getCounter(int counterIdx);

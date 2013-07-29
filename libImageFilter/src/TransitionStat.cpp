@@ -68,33 +68,18 @@ void TransitionStat::addValue(const unsigned int inputValue, const bool isTarget
 			// Encode runlength
 			// Input and output buffers already set up in the constructor.
 			unsigned int length = this->runLengthTransform.transform();
-			// Debug
-			//showBufferContent("LenEncoded",lengthEncodingOutputBuffer,length);
-			node = counterTreeRoot->getNode(this->runLengthTransform.getInternalOutputBuffer(),length,true);
 
-			// DEBUG
-/*			if (isTargetArea)
-			{
-				int oldOnCnt = node->getCounter(COUNTERIDX_ON);
-				int oldOffCnt = node->getCounter(COUNTERIDX_OFF);
-				stringstream ss;
-				for(int i=0; i<length; i++)
-				{
-					ss << (int)(lengthEncodingOutputBuffer[i]);
-				}
-				string str = ss.str();
-				const char *strPtr = str.c_str(); 
-				LogConfigTime::Logger::getInstance()->Log(LogConfigTime::Logger::LOGLEVEL_VERBOSE,"addValue","INC %s for seq: %s, old cnt(on/off):%d/%d\n",(isTargetArea?"ON":"OFF"),strPtr,oldOnCnt,oldOffCnt);
-			}*/
-			// END OF DEBUG
+			//node = counterTreeRoot->getNode(this->runLengthTransform.getInternalOutputBuffer(),length,true);
+			counterTreeRoot->incrementCountersAlongPath(this->runLengthTransform.getInternalOutputBuffer(),length,true,isTargetArea ? COUNTERIDX_ON : COUNTERIDX_OFF);
 		}
 		else
 		{
-			node = counterTreeRoot->getNode(lastValues,markovChainOrder,true);
+			counterTreeRoot->incrementCountersAlongPath(lastValues,markovChainOrder,true,isTargetArea ? COUNTERIDX_ON : COUNTERIDX_OFF);
+			//node = counterTreeRoot->getNode(lastValues,markovChainOrder,true);
 		}
 
 		// Increment respective counter
-		node->incrementCounter(isTargetArea ? COUNTERIDX_ON : COUNTERIDX_OFF);
+		//node->incrementCounter(isTargetArea ? COUNTERIDX_ON : COUNTERIDX_OFF);
 	}
 }
 

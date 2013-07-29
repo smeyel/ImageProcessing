@@ -35,7 +35,7 @@ SequenceCounterTreeNode::~SequenceCounterTreeNode()
 	}
 }
 
-SequenceCounterTreeNode *SequenceCounterTreeNode::getChildNode(const unsigned int inputValue, bool createIfNotPresent)
+SequenceCounterTreeNode *SequenceCounterTreeNode::getDirectChild(const unsigned int inputValue, bool createIfNotPresent)
 {
 	OPENCV_ASSERT(inputValue<(unsigned int)inputValueNumber,"SequenceCounterTreeNode.getChildNode","Input value is too high!");
 	if (children[inputValue] == NULL && createIfNotPresent)
@@ -69,10 +69,10 @@ SequenceCounterTreeNode *SequenceCounterTreeNode::getNode(const unsigned int *in
 	if (numberOfValues == 1)
 	{
 		// Return direct child node
-		return getChildNode(*inputValues,createIfNotExisting);
+		return getDirectChild(*inputValues,createIfNotExisting);
 	}
 	// Recursive call
-	SequenceCounterTreeNode *child = getChildNode(*inputValues,createIfNotExisting);
+	SequenceCounterTreeNode *child = getDirectChild(*inputValues,createIfNotExisting);
 	if (child)
 	{
 		return child->getNode(inputValues+1,numberOfValues-1,createIfNotExisting);
@@ -85,6 +85,25 @@ void SequenceCounterTreeNode::incrementCounter(int counterIdx)
 	OPENCV_ASSERT(counterIdx<MAXNODECOUNTERNUM,"SequenceCounterTreeNode.incrementCounter","Counter IDX > max!");
 	OPENCV_ASSERT(counterIdx>=0,"SequenceCounterTreeNode.incrementCounter","Counter IDX negative!");
 	counter[counterIdx]++;
+}
+
+SequenceCounterTreeNode *SequenceCounterTreeNode::incrementCountersAlongPath(const unsigned int *inputValues, const int numberOfValues, bool createIfNotExisting, int counterIdx)
+{
+	OPENCV_ASSERT(counterIdx<MAXNODECOUNTERNUM,"SequenceCounterTreeNode.incrementCounter","Counter IDX > max!");
+	OPENCV_ASSERT(counterIdx>=0,"SequenceCounterTreeNode.incrementCounter","Counter IDX negative!");
+	counter[counterIdx]++;
+
+	if (numberOfValues == 0)
+	{
+		return this;
+	}
+	// Recursive call
+	SequenceCounterTreeNode *child = getDirectChild(*inputValues,createIfNotExisting);
+	if (child)
+	{
+		return child->incrementCountersAlongPath(inputValues+1,numberOfValues-1,createIfNotExisting, counterIdx);
+	}
+	return NULL;
 }
 
 int SequenceCounterTreeNode::getCounter(int counterIdx)
@@ -239,7 +258,7 @@ void SequenceCounterTreeNode::redirectParents(SequenceCounterTreeNode *startNode
 	// Redirect children (before modifying children pointers!) and this node
 	for(int i=0; i<startNode->inputValueNumber; i++)
 	{
-		redirectParents(startNode->getChildNode(i),oldNode,newNode);
+		redirectParents(startNode->getDirectChild(i),oldNode,newNode);
 		// Now it is safe to change the child pointer (if necessary)
 	}
 
