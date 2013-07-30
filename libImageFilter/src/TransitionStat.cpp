@@ -62,24 +62,16 @@ void TransitionStat::addValue(const unsigned int inputValue, const bool isTarget
 
 		if (useRunLengthEncoding)
 		{
-			// Debug
-			//showBufferContent("LastValues",lastValues,markovChainOrder);
-
-			// Encode runlength
 			// Input and output buffers already set up in the constructor.
 			unsigned int length = this->runLengthTransform.transform();
 
-			//node = counterTreeRoot->getNode(this->runLengthTransform.getInternalOutputBuffer(),length,true);
 			counterTreeRoot->incrementCountersAlongPath(this->runLengthTransform.getInternalOutputBuffer(),length,true,isTargetArea ? COUNTERIDX_ON : COUNTERIDX_OFF);
 		}
 		else
 		{
 			counterTreeRoot->incrementCountersAlongPath(lastValues,markovChainOrder,true,isTargetArea ? COUNTERIDX_ON : COUNTERIDX_OFF);
-			//node = counterTreeRoot->getNode(lastValues,markovChainOrder,true);
 		}
 
-		// Increment respective counter
-		//node->incrementCounter(isTargetArea ? COUNTERIDX_ON : COUNTERIDX_OFF);
 	}
 }
 
@@ -101,7 +93,6 @@ unsigned char TransitionStat::getScoreForValue(const unsigned int inputValue)
 		{
 			unsigned int length = this->runLengthTransform.transform();
 			node = counterTreeRoot->getNode(this->runLengthTransform.getInternalOutputBuffer(),length,true);
-			//TODO: node = counterTreeRoot->getNode(this->runLengthTransform.getInternalOutputBuffer(),length-1,true);
 		}
 		else
 		{
