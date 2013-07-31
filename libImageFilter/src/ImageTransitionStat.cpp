@@ -107,7 +107,7 @@ void ImageTransitionStat::verboseScoreForImageLocation(Mat &src, Point pointToCh
 	{
 		ptr = srcPtr+pointToCheck.x-markovChainOrder+i;
 		lastValues[i]=*ptr;
-		*ptr = 0x00;	// Debug purposes
+		//*ptr = 0x00;	// Debug purposes
 	}
 
 	SequenceCounterTreeNode *node = NULL;
