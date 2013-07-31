@@ -44,7 +44,7 @@ public:
 	void setThreshold(unsigned char thres);
 
 	TimeSyncBeaconReader();
-	void ProcessImage(cv::Mat srcImg);
+	void ProcessImage(const cv::Mat &srcImg);
 	void GenerateImage();
 	cv::Rect getBoundingRect();
 

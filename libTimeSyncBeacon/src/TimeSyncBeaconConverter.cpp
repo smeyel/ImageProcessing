@@ -106,12 +106,12 @@ long long TimeSyncBeaconConverter::GetTimeUsFromBrightness(const uint8_t brightn
 	for(int i=0, cr=0, cg=0 ; i<64 ; i++){
 	
 		if(brightness[i] > brightness_max)
-			return ERROR("too high brightness value");
+			return _ERROR("too high brightness value");
 	
 		//edge
 		if(i== 0 || i==15 || i==48 || i==63){
 			if(brightness[i] < edge_threshold)
-				return ERROR("edge count < 4");
+				return _ERROR("edge count < 4");
 		}
 		
 		//run
@@ -133,7 +133,7 @@ long long TimeSyncBeaconConverter::GetTimeUsFromBrightness(const uint8_t brightn
 				gray[cg++] = off;
 			else if(brightness[i] < gray_high_threshold){
 				if(gray_unstable != -1)
-					return ERROR("unstable count > 1");
+					return _ERROR("unstable count > 1");
 				gray_unstable = cg;
 				gray[cg++] = unstable;
 			}
@@ -179,16 +179,16 @@ long long TimeSyncBeaconConverter::GetTimeUsFromBrightness(const uint8_t brightn
 	cout << "run_change = " << run_change << endl;
 	#endif
 
-	//0000000000000000   0   ERROR
+	//0000000000000000   0   _ERROR
 	//0000001111110000   2   OK
 	//0000000000111111   1   OK
 	//1111000000000011   2   OK
-	//1111111111111111   0   ERROR
-	//0000011100000111   3   ERROR
+	//1111111111111111   0   _ERROR
+	//0000011100000111   3   _ERROR
 	if(run_change == 0)
-		return ERROR("run is full of the same bits");
+		return _ERROR("run is full of the same bits");
 	if(run_change > 2)
-		return ERROR("run is discontinuous");
+		return _ERROR("run is discontinuous");
 
 	#if DEBUG
 	cout << "run_length = " << run_length << endl;
@@ -248,7 +248,7 @@ long long TimeSyncBeaconConverter::GetTimeUsFromBrightness(const uint8_t brightn
 	//no turn in run
 	if(!turn){
 		if(gray_unstable != -1)
-			return ERROR("no turn in run, but gray has unstable");
+			return _ERROR("no turn in run, but gray has unstable");
 		return RET("no turn in run, and gray has no unstable", binAndRunFirstToUs(Kb, run_first));
 	}
 	
@@ -267,21 +267,21 @@ long long TimeSyncBeaconConverter::GetTimeUsFromBrightness(const uint8_t brightn
 		//high dominant => gray is the beginning of the exposure
 		if(run_high_count >= 2*run_low_count){
 			if(gray_unstable != -1)
-				return ERROR("turn and dominant in run (high), but gray has unstable");
+				return _ERROR("turn and dominant in run (high), but gray has unstable");
 			return RET("turn and dominant in run (high), and gray has no unstable, K=begin", binAndRunFirstToUs(Kb, run_first));
 		}
 
 		//low dominant => gray is the end of the exposure
 		else if(run_low_count >= 2*run_high_count){
 			if(gray_unstable != -1)
-				return ERROR("turn and dominant in run (low), but gray has unstable");
+				return _ERROR("turn and dominant in run (low), but gray has unstable");
 			return RET("turn and dominant in run (low), and gray has no unstable, K=end", binAndRunFirstToUs(Kb-1, run_first));
 		}
 
 		//no dominant
 		else{
 			if(gray_unstable == -1)
-				return ERROR("turn but no dominant in run, but gray has no unstable (OK?)");
+				return _ERROR("turn but no dominant in run, but gray has no unstable (OK?)");
 			uint32_t K_p = binaryToGray(Kb+1);             //binary code +1 in gray code
 			uint32_t K_m = binaryToGray(Kb-1);             //binary code -1 in gray code
 			uint32_t x_p = K_p ^ K;                        //bit mask of the changing bit in K => K_p
@@ -309,7 +309,7 @@ long long TimeSyncBeaconConverter::GetTimeUsFromBrightness(const uint8_t brightn
 			else if(x_m & gu)
 				return RET("turn but no dominant in run, gray has the -1 unstable, K=end", binAndRunFirstToUs(Kb-1, run_first));
 			else
-				return ERROR("turn but no dominant in run, gray has unstable, but no +1 or -1 bit");
+				return _ERROR("turn but no dominant in run, gray has unstable, but no +1 or -1 bit");
 		}
 		
 	}
@@ -317,9 +317,9 @@ long long TimeSyncBeaconConverter::GetTimeUsFromBrightness(const uint8_t brightn
 }
 
 
-long long TimeSyncBeaconConverter::ERROR(const char* str){
+long long TimeSyncBeaconConverter::_ERROR(const char* str){
 	#if DEBUG
-	cout << "ERROR: " << "\"" << str << "\"" << " => " << 0 << endl;
+	cout << "_ERROR: " << "\"" << str << "\"" << " => " << 0 << endl;
 	#else
 	//TODO: exception?
 	#endif

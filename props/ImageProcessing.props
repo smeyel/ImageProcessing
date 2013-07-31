@@ -5,7 +5,7 @@
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir)ImageProcessing/libTwoColorCircleMarker/include;$(SolutionDir)ImageProcessing/libImageFilter/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir)ImageProcessing/libTwoColorCircleMarker/include;$(SolutionDir)ImageProcessing/libImageFilter/include;$(SolutionDir)ImageProcessing/libTimeSyncBeacon/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>

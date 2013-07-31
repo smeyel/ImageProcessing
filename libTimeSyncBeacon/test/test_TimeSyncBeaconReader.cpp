@@ -1,36 +1,25 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include "opencv2/imgproc/imgproc.hpp"
 #include <iostream>
-#include "TimeSyncBeaconConverter.h"
-#include "TimeSyncBeaconReader.h"
-#include "SmartVector.h"
-#include "CircleXYR.h"
+
+#include "TimeSyncBeacon.h" 			//Needed for single run
+
+#include "TimeSyncBeaconConverter.h" 	//Needed for interactive mode
+#include "TimeSyncBeaconReader.h"		//Needed for single run mode
+
 
 using namespace cv;
 using namespace std;
 
 Mat sourceImage;
 
-int main( int argc, char** argv )
+void interactiveMode()
 {
-	if( argc != 2)
-	{
-		cout <<" Usage: " << argv[0] << " display_image ImageToLoadAndDisplay" << endl;
-		return -1;
-	}
-
-	sourceImage = imread(argv[1], CV_LOAD_IMAGE_COLOR);   // Read the file
-
-	if(! sourceImage.data )                              // Check for invalid input
-	{
-		cout <<  "Could not open or find the image" << std::endl ;
-		return -1;
-	}
 	namedWindow( "Display window", CV_WINDOW_AUTOSIZE );// Create a window for display.
 	TimeSyncBeaconReader tsbr;
+	tsbr.setThreshold(100);
 	char key=0;
-	TimeSyncBeaconConverter tsbc(255,30,50,100,100);
+	TimeSyncBeaconConverter tsbc(255,10,10,100,10);
 	do {
 		switch (key) {
 		case 'I':
@@ -54,10 +43,41 @@ int main( int argc, char** argv )
 		cout << "Bounding rect " << tsbr.getBoundingRect().x << " " << tsbr.getBoundingRect().y << " " <<
 				tsbr.getBoundingRect().width << " " << tsbr.getBoundingRect().height << endl;
 		Mat result;
+		tsbr.GenerateImage();
 		merge(tsbr.channel, 3, result);
 		result += sourceImage;
 		imshow( "Display window", result(tsbr.getBoundingRect()) );                   // Show our image inside it.
+		cout << "Press q to quit" << endl;
 	} while ((key=waitKey(0)) != 'q');                                          // Wait for a keystroke in the window
+}
+
+void singleRun()
+{
+	TimeSyncBeacon tsb;
+	cout << "TimeSyncBeacon time " << tsb.GetTimeUsFromImage(sourceImage) << endl;
+
+}
+
+int main( int argc, char** argv )
+{
+	if( argc < 2)
+	{
+		cout <<" Usage: " << argv[0] << " infile [--interactive]" << endl;
+		return -1;
+	}
+
+	sourceImage = imread(argv[1], CV_LOAD_IMAGE_COLOR);   // Read the file
+
+	if(! sourceImage.data )                              // Check for invalid input
+	{
+		cout <<  "Could not open or find the image" << std::endl ;
+		return -1;
+	}
+
+	if ((argc==3) && (strcmp(argv[2], "--interactive") == 0))
+		interactiveMode();
+	else
+		singleRun();
 
 	return 0;
 }

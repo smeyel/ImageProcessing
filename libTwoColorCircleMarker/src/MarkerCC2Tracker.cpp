@@ -17,7 +17,7 @@ using namespace cv;
 using namespace TwoColorCircleMarker;
 
 // Config manager
-bool MarkerCC2Tracker::ConfigManager::readConfiguration(char *filename)
+bool MarkerCC2Tracker::ConfigManager::readConfiguration(const char *filename)
 {
 	LogConfigTime::SimpleIniConfigReader *SIreader = new LogConfigTime::SimpleIniConfigReader(filename);
 	LogConfigTime::ConfigReader *reader = SIreader;
@@ -71,7 +71,7 @@ MarkerCC2Tracker::~MarkerCC2Tracker()
 }
 
 
-void MarkerCC2Tracker::init(char *configfilename, bool useDefaultInternalFrames, int width, int height)
+void MarkerCC2Tracker::init(const char *configfilename, bool useDefaultInternalFrames, int width, int height)
 {
 	if (useDefaultInternalFrames)
 	{

@@ -23,7 +23,7 @@ using namespace LogConfigTime;
 #define LOG_TAG "SMEyeL::TwoColorLocator"
 
 // Config manager
-bool TwoColorLocator::ConfigManager::readConfiguration(char *filename)
+bool TwoColorLocator::ConfigManager::readConfiguration(const char *filename)
 {
 	LogConfigTime::SimpleIniConfigReader *SIreader = new LogConfigTime::SimpleIniConfigReader(filename);
 	LogConfigTime::ConfigReader *reader = SIreader;
@@ -40,7 +40,7 @@ TwoColorLocator::TwoColorLocator()
 	verboseImage = NULL;
 }
 
-void TwoColorLocator::init(char *configFileName)
+void TwoColorLocator::init(const char *configFileName)
 {
 	configManager.init(configFileName);
 }

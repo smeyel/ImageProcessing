@@ -37,7 +37,7 @@ namespace TwoColorCircleMarker
 
 		/** Initialization, uses the given configuration ini file to set up the process.
 		*/
-		void init(char *configFileName);
+        void init(const char *configFileName);
 
 		/** Target image for optional verbose functions
 			Set it to a BGR color image to use the verbose functions. Otherwise, leave it NULL.

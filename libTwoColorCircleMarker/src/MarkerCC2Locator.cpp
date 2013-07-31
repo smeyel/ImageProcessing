@@ -20,7 +20,7 @@ MarkerCC2Locator::~MarkerCC2Locator()
 {
 }
 
-void MarkerCC2Locator::init(char *configFileName)
+void MarkerCC2Locator::init(const char *configFileName)
 {
 	MarkerCC2::init(configFileName);
 }

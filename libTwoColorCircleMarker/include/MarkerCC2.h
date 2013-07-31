@@ -29,10 +29,10 @@ namespace TwoColorCircleMarker
 		{
 			// This method is called by init of the base class to read the configuration values.
 //			virtual bool readConfiguration(CSimpleIniA *ini);
-			virtual bool readConfiguration(char *filename);
+            virtual bool readConfiguration(const char *filename);
 
 		public:
-			void init(char *filename)
+            void init(const char *filename)
 			{
 				readConfiguration(filename);
 			}
@@ -56,7 +56,7 @@ namespace TwoColorCircleMarker
 		/** static init
 			@param configFileName	name of the configuration file.
 		*/
-		static void init(char *configFileName);
+        static void init(const char *configFileName);
 
 		/** ID of the marker. Set by readCode(). Only valid if isValid is true.
 		*/
