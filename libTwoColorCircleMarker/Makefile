@@ -1,9 +1,9 @@
 CC = g++
 AR = ar
-
+OPENCV_CFLAGS = `pkg-config --cflags opencv`
 LIBLOGCONFIGTIME_PATH = ../../Framework/libLogConfigTime
 
-CFLAGS = -c -Wall -I include/ -I $(LIBLOGCONFIGTIME_PATH)/include
+CFLAGS = -c -Wall -I include/ -I $(LIBLOGCONFIGTIME_PATH)/include $(OPENCV_CFLAGS)
 LDFLAGS = 
 
 all: libTwoColorCircleMarker.a

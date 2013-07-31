@@ -10,7 +10,11 @@ LDFLAGS =
 all: libTimeSyncBeacon.a
 
 
-LIBTIMESYNCBEACON_OBJECTS = src/TimeSyncBeaconConverter.o src/SmartVector.o src/CircleXYR.o src/TimeSyncBeaconReader.o
+LIBTIMESYNCBEACON_OBJECTS = src/TimeSyncBeaconConverter.o \
+							src/SmartVector.o \
+							src/CircleXYR.o \
+							src/TimeSyncBeaconReader.o \
+							src/TimeSyncBeacon.o
 
 
 libTimeSyncBeacon.a: $(LIBTIMESYNCBEACON_OBJECTS)

@@ -25,7 +25,7 @@ using namespace LogConfigTime;
 // Config manager
 MarkerCC2::ConfigManager MarkerCC2::configManager;
 
-bool MarkerCC2::ConfigManager::readConfiguration(char *filename)
+bool MarkerCC2::ConfigManager::readConfiguration(const char *filename)
 {
 	LogConfigTime::SimpleIniConfigReader *SIreader = new LogConfigTime::SimpleIniConfigReader(filename);
 	LogConfigTime::ConfigReader *reader = SIreader;
@@ -42,7 +42,7 @@ bool MarkerCC2::ConfigManager::readConfiguration(char *filename)
 }
 
 
-void MarkerCC2::init(char *configFileName)
+void MarkerCC2::init(const char *configFileName)
 {
 	configManager.init(configFileName);
 }

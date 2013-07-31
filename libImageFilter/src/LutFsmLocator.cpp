@@ -75,6 +75,10 @@ void LutFsmLocator::processImage(cv::Mat &src)
 	// Insert point: access to all bounding boxes at once
 	this->processBoundingBoxes(bbVector);
 
+	// At this point, FSM is ready (executed on LUT mapped image).
+	// The followings are only needed so that the LUT result is available as LutImage. (For example for marker code reading...)
+	//	However, LutImage will only be created inside the bounding boxes.
+
 	if (cleanVerboseImage)
 		lutImage->setTo(0);	// Only for nicer visualization...
 

@@ -37,10 +37,10 @@ namespace TwoColorCircleMarker
 		class ConfigManager
 		{
 			// This method is called by init of the base class to read the configuration values.
-			virtual bool readConfiguration(char *filename);
+            virtual bool readConfiguration(const char *filename);
 
 		public:
-			void init(char *filename)
+            void init(const char *filename)
 			{
 				readConfiguration(filename);
 			}
@@ -155,7 +155,7 @@ namespace TwoColorCircleMarker
 			@param width	Width of the image if useDefaultInternalFrames is true.
 			@param height	Height of the image if useDefaultInternalFrames is true.
 		*/
-		void init(char *configfilename, bool useDefaultInternalFrames=false, int width=0, int height=0);
+        void init(const char *configfilename, bool useDefaultInternalFrames=false, int width=0, int height=0);
 
 		/** Interface for processing a new frame. It contains: color filtering, marker localization
 			  (accelerated by location predicion if available) and marker code validation.

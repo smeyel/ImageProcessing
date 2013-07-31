@@ -1,3 +1,4 @@
+#include <fstream>
 #include "LutColorFilter.h"
 
 using namespace smeyel;
@@ -29,11 +30,65 @@ void LutColorFilter::InitLut(uchar colorCode)
 
 void LutColorFilter::SetLutItem(uchar r, uchar g, uchar b, uchar colorCode)
 {
-	unsigned int idxR = r >> 5;
-	unsigned int idxG = g >> 5;
-	unsigned int idxB = b >> 5;
-	unsigned int idx = (idxR << 6) | (idxG << 3) | idxB;
+	unsigned int idx = rgb2idx(r,g,b);
 	RgbLut[idx] = colorCode;
+}
+
+void LutColorFilter::SetColorcodeName(unsigned char colorcode, string name)
+{
+	while (colorcode >= this->colorcodeNames.size())
+	{
+		this->colorcodeNames.push_back(string("?"));
+	}
+	this->colorcodeNames[colorcode] = name;
+	
+}
+
+string LutColorFilter::GetColorcodeName(unsigned char colorcode)
+{
+	if (colorcode < this->colorcodeNames.size())
+	{
+		return this->colorcodeNames[colorcode];
+	}
+	return string("?");
+}
+
+
+void LutColorFilter::ExtendLutToConformMask(Mat &image, Mat &colorCodeMask, unsigned char maskSkipValue)
+{
+	assert(image.type() == CV_8UC3);
+	assert(colorCodeMask.type() == CV_8UC1);
+
+	assert(image.cols == colorCodeMask.cols);
+	assert(image.rows == colorCodeMask.rows);
+
+	uchar colorCode;
+
+	// Go along every pixel and do the following:
+	for (int row=0; row<image.rows; row++)
+	{
+		// Calculate pointer to the beginning of the current row
+		const uchar *imgPtr = (const uchar *)(image.data + row*image.step);
+		// Result pointer
+		const uchar *maskPtr = (uchar *)(colorCodeMask.data + row*colorCodeMask.step);
+
+		// Go along every BGR colorspace pixel
+		for (int col=0; col<image.cols; col++)
+		{
+			uchar B = *imgPtr++;
+			uchar G = *imgPtr++;
+			uchar R = *imgPtr++;
+			colorCode = *maskPtr++;
+			unsigned int idxR = R >> 5;
+			unsigned int idxG = G >> 5;
+			unsigned int idxB = B >> 5;
+			unsigned int idx = (idxR << 6) | (idxG << 3) | idxB;
+			if (colorCode != maskSkipValue)
+			{
+				RgbLut[idx] = colorCode;
+			}
+		}	// end for col
+	}	// end for row
 }
 
 void LutColorFilter::FilterRoI(Mat &src, Rect &roi, Mat &dst)
@@ -314,4 +369,84 @@ void LutColorFilter::SetInverseLut(uchar colorCode, uchar r, uchar g, uchar b)
 	inverseLut[colorCode*3+0]=r;
 	inverseLut[colorCode*3+1]=g;
 	inverseLut[colorCode*3+2]=b;
+}
+
+// --- Aux helper functions
+void LutColorFilter::idx2rgb(unsigned int lutIdx, unsigned char &r, unsigned char &g, unsigned char &b)
+{
+	r = (lutIdx >> 6) << 5;
+	g = ((lutIdx >> 3) & 0x07) << 5;
+	b = (lutIdx & 0x07) << 5;
+}
+
+unsigned int LutColorFilter::rgb2idx(unsigned char r, unsigned char g, unsigned char b)
+{
+	unsigned int idxR = r >> 5;
+	unsigned int idxG = g >> 5;
+	unsigned int idxB = b >> 5;
+	return (idxR << 6) | (idxG << 3) | idxB;
+}
+
+unsigned char LutColorFilter::idx2lutValue(unsigned int lutIdx)
+{
+	return RgbLut[lutIdx];
+}
+
+void LutColorFilter::quantizeRgb(unsigned char rOld, unsigned char gOld, unsigned char bOld, unsigned char &rNew, unsigned char &gNew, unsigned char &bNew)
+{
+	unsigned int lutIdx = rgb2idx(rOld, gOld, bOld);
+	idx2rgb(lutIdx,rNew,gNew,bNew);
+}
+
+unsigned char LutColorFilter::rgb2lutValue(unsigned char r, unsigned char g, unsigned char b)
+{
+	unsigned int idx = rgb2idx(r,g,b);
+	return idx2lutValue(idx);
+}
+
+void LutColorFilter::save(const char *filename)
+{
+	std::ofstream file;
+	file.open(filename);
+	// Save LUT
+	for(int i=0; i<512; i++)
+	{
+		file << (int)this->RgbLut[i] << " ";
+	}
+	file << std::endl;
+	// Save inverse LUT
+	for(int i=0; i<256; i++)
+	{
+		file << (int)(inverseLut[i*3+0]) << " ";	// red
+		file << (int)(inverseLut[i*3+1]) << " ";	// green
+		file << (int)(inverseLut[i*3+2]) << std::endl;	// blue
+	}
+	file.close();
+}
+
+void LutColorFilter::load(const char *filename)
+{
+	std::ifstream file;
+	file.open(filename);
+	int value;
+	for(int i=0; i<512; i++)
+	{
+		file >> value;
+		this->RgbLut[i] = (unsigned char)value;
+	}
+/*	for(int i=0; i<256; i++)
+	{
+		for (int j=0; j<3; j++)	// R, G, B
+		{
+			file >> value;
+			inverseLut[i*3+j] = value;
+		}
+	}*/
+
+	file.close();
+}
+
+void LutColorFilter::setLutItemByIdx(unsigned int idx, unsigned char value)
+{
+	this->RgbLut[idx] = value;
 }

@@ -10,6 +10,7 @@ namespace smeyel
 	/** Finite state machine based color filter.
 		The output is a CV_8UC1 type image containing the current
 		state of the FSM for every pixel.
+		TODO: the resulting pixel values may be the output of a finite state transducer and not the FSM state itself.
 	*/
 	class FsmColorFilter : public LutColorFilter
 	{
