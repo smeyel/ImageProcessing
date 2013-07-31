@@ -34,6 +34,26 @@ void LutColorFilter::SetLutItem(uchar r, uchar g, uchar b, uchar colorCode)
 	RgbLut[idx] = colorCode;
 }
 
+void LutColorFilter::SetColorcodeName(unsigned char colorcode, string name)
+{
+	while (colorcode >= this->colorcodeNames.size())
+	{
+		this->colorcodeNames.push_back(string("?"));
+	}
+	this->colorcodeNames[colorcode] = name;
+	
+}
+
+string LutColorFilter::GetColorcodeName(unsigned char colorcode)
+{
+	if (colorcode < this->colorcodeNames.size())
+	{
+		return this->colorcodeNames[colorcode];
+	}
+	return string("?");
+}
+
+
 void LutColorFilter::ExtendLutToConformMask(Mat &image, Mat &colorCodeMask, unsigned char maskSkipValue)
 {
 	assert(image.type() == CV_8UC3);

@@ -1,6 +1,8 @@
 #ifndef __LUTCOLORFILTER_H
 #define __LUTCOLORFILTER_H
 
+#include <string>
+#include <vector>
 #include "ColorFilter.h"
 
 namespace smeyel
@@ -20,6 +22,8 @@ namespace smeyel
 
 		uchar *inverseLut;	// RGB order!
 
+		std::vector<std::string> colorcodeNames;
+
 	public:
 		/** Constructor */
 		LutColorFilter();
@@ -30,6 +34,10 @@ namespace smeyel
 			Used for runtime color LUT adjustments.
 		*/
 		void SetLutItem(uchar r, uchar g, uchar b, uchar colorCode);
+
+		void SetColorcodeName(unsigned char colorcode, std::string name);
+
+		std::string GetColorcodeName(unsigned char colorcode);
 
 		void ExtendLutToConformMask(cv::Mat &image, cv::Mat &colorCodeImage, unsigned char maskSkipValue=0);
 
