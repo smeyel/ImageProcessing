@@ -34,6 +34,43 @@ void LutColorFilter::SetLutItem(uchar r, uchar g, uchar b, uchar colorCode)
 	RgbLut[idx] = colorCode;
 }
 
+void LutColorFilter::ExtendLutToConformMask(Mat &image, Mat &colorCodeMask, unsigned char maskSkipValue)
+{
+	assert(image.type() == CV_8UC3);
+	assert(colorCodeMask.type() == CV_8UC1);
+
+	assert(image.cols == colorCodeMask.cols);
+	assert(image.rows == colorCodeMask.rows);
+
+	uchar colorCode;
+
+	// Go along every pixel and do the following:
+	for (int row=0; row<image.rows; row++)
+	{
+		// Calculate pointer to the beginning of the current row
+		const uchar *imgPtr = (const uchar *)(image.data + row*image.step);
+		// Result pointer
+		const uchar *maskPtr = (uchar *)(colorCodeMask.data + row*colorCodeMask.step);
+
+		// Go along every BGR colorspace pixel
+		for (int col=0; col<image.cols; col++)
+		{
+			uchar B = *imgPtr++;
+			uchar G = *imgPtr++;
+			uchar R = *imgPtr++;
+			colorCode = *maskPtr++;
+			unsigned int idxR = R >> 5;
+			unsigned int idxG = G >> 5;
+			unsigned int idxB = B >> 5;
+			unsigned int idx = (idxR << 6) | (idxG << 3) | idxB;
+			if (colorCode != maskSkipValue)
+			{
+				RgbLut[idx] = colorCode;
+			}
+		}	// end for col
+	}	// end for row
+}
+
 void LutColorFilter::FilterRoI(Mat &src, Rect &roi, Mat &dst)
 {
 	assert(src.type() == CV_8UC3);

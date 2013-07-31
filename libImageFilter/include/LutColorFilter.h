@@ -31,6 +31,8 @@ namespace smeyel
 		*/
 		void SetLutItem(uchar r, uchar g, uchar b, uchar colorCode);
 
+		void ExtendLutToConformMask(cv::Mat &image, cv::Mat &colorCodeImage, unsigned char maskSkipValue=0);
+
 		void InitLut(uchar colorCode);
 
 
