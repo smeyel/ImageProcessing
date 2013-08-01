@@ -108,7 +108,6 @@ void ColorFilter::SetBoundingBoxCheckParams(BoundingBoxCheckParams params)
 	this->boundingBoxCheckParams = params;
 }
 
-
 void ColorFilter::FinishRow(int rowIdx)
 {
 	// Create marker candidate from every discontinued detection rectangle

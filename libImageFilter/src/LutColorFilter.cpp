@@ -441,14 +441,14 @@ void LutColorFilter::load(const char *filename)
 		file >> value;
 		this->RgbLut[i] = (unsigned char)value;
 	}
-/*	for(int i=0; i<256; i++)
+	for(int i=0; i<256; i++)
 	{
 		for (int j=0; j<3; j++)	// R, G, B
 		{
 			file >> value;
 			inverseLut[i*3+j] = value;
 		}
-	}*/
+	}
 
 	file.close();
 }
