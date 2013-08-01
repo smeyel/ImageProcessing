@@ -1,7 +1,7 @@
 #ifndef __DEFAULTCOLORCODES_H
 #define __DEFAULTCOLORCODES_H
 
-// Value 0 skipped and used by FSM for initial state
+// Value 0 skipped and may be used by FSM for initial state
 #define COLORCODE_NONE	1
 #define COLORCODE_BLK	2
 #define COLORCODE_WHT	3

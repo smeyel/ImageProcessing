@@ -50,6 +50,8 @@ namespace smeyel
 			Every pixel not having a colorcode maskSkipValue in colorCodeImage is taken into account.
 			The modified LUT will return the given colorcodes for the colors appearing in image.
 			Contradicting assignments overwrite each other.
+
+			See the LutCalibrationPattern class to see its application.
 		*/
 		void ExtendLutToConformMask(cv::Mat &image, cv::Mat &colorCodeImage, unsigned char maskSkipValue=0);
 

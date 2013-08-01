@@ -7,6 +7,7 @@ using namespace cv;
 
 namespace smeyel
 {
+	/** Represents a tetragon, an area with 4 corners, but not necessarily a rectangle. */
 	class Tetragon
 	{
 	public:

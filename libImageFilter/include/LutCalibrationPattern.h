@@ -6,6 +6,8 @@
 
 namespace smeyel
 {
+	/** Handles a calibration pattern image used to calibrate the LutColorFilter to
+		the current lighting conditions. */
 	class LutCalibrationPattern : public Tetragon
 	{
 		// Unit vectors from upper left corner.
