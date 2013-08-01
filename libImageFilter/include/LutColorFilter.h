@@ -35,10 +35,24 @@ namespace smeyel
 		*/
 		void SetLutItem(uchar r, uchar g, uchar b, uchar colorCode);
 
+		/** Set the name of a colorcode. */
 		void SetColorcodeName(unsigned char colorcode, std::string name);
 
+		/** Get the name of a colorcode. */
 		std::string GetColorcodeName(unsigned char colorcode);
 
+		/** Show the names of colorcodes, written on a given stream. */
+		void ShowColorcodeNames(std::ostream &stream);
+
+		/** Modify the LUT to match the given image and mask.
+			@param image	A BGR (CV_8UC3) image
+			@param colorCodeImage	A CV_8UC1 image where every pixel has a colorcode.
+			Every pixel not having a colorcode maskSkipValue in colorCodeImage is taken into account.
+			The modified LUT will return the given colorcodes for the colors appearing in image.
+			Contradicting assignments overwrite each other.
+
+			See the LutCalibrationPattern class to see its application.
+		*/
 		void ExtendLutToConformMask(cv::Mat &image, cv::Mat &colorCodeImage, unsigned char maskSkipValue=0);
 
 		void InitLut(uchar colorCode);
