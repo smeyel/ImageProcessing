@@ -27,9 +27,6 @@
     <ClInclude Include="include\LutColorFilter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\LutFsmLocator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\SequenceCounterTreeNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -63,6 +60,15 @@
     <ClInclude Include="include\DefaultLutColorFilter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\BoundingBoxValidator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DetectionBoundingBoxCollector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SimpleBoundingBoxValidator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ColorFilter.cpp">
@@ -75,9 +81,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\LutColorFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\LutFsmLocator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SequenceCounterTreeNode.cpp">
@@ -105,6 +108,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\DefaultLutColorFilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DetectionBoundingBoxCollector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

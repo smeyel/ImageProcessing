@@ -7,7 +7,11 @@
 namespace smeyel
 {
 	/** Handles a calibration pattern image used to calibrate the LutColorFilter to
-		the current lighting conditions. */
+		the current lighting conditions.
+	
+		Use the program ImageProcessing\LutCalibration to create the pattern.
+		TODO: only 4 circles are needed, modify the program accordingly!
+	*/
 	class LutCalibrationPattern : public Tetragon
 	{
 		// Unit vectors from upper left corner.

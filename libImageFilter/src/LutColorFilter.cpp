@@ -118,7 +118,7 @@ void LutColorFilter::Filter(Mat *src, Mat *dst, std::vector<Rect> *resultBoundin
 	{
 		Filter_All(*src,*dst);
 		// Copy bounding boxes from internal vector
-		*resultBoundingBoxes = boundingBoxes;
+		*resultBoundingBoxes = collector->getCopyValidBoundingBoxes();
 	}
 	else if (dst!=NULL && resultBoundingBoxes==NULL)
 	{
@@ -128,7 +128,7 @@ void LutColorFilter::Filter(Mat *src, Mat *dst, std::vector<Rect> *resultBoundin
 	{
 		Filter_NoMatOutputNoMask(*src);
 		// Copy bounding boxes from internal vector
-		*resultBoundingBoxes = boundingBoxes;
+		*resultBoundingBoxes = collector->getCopyValidBoundingBoxes();
 	}
 }
 
@@ -441,14 +441,14 @@ void LutColorFilter::load(const char *filename)
 		file >> value;
 		this->RgbLut[i] = (unsigned char)value;
 	}
-/*	for(int i=0; i<256; i++)
+	for(int i=0; i<256; i++)
 	{
 		for (int j=0; j<3; j++)	// R, G, B
 		{
 			file >> value;
 			inverseLut[i*3+j] = value;
 		}
-	}*/
+	}
 
 	file.close();
 }

@@ -75,32 +75,34 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\BoundingBoxValidator.h" />
     <ClInclude Include="include\ColorFilter.h" />
     <ClInclude Include="include\DefaultColorCodes.h" />
     <ClInclude Include="include\DefaultLutColorFilter.h" />
+    <ClInclude Include="include\DetectionBoundingBoxCollector.h" />
     <ClInclude Include="include\FsmBuilder.h" />
     <ClInclude Include="include\FsmColorFilter.h" />
     <ClInclude Include="include\ImageTransitionStat.h" />
     <ClInclude Include="include\LutCalibrationPattern.h" />
     <ClInclude Include="include\LutColorFilter.h" />
-    <ClInclude Include="include\LutFsmLocator.h" />
     <ClInclude Include="include\PixelPrecisionCalculator.h" />
     <ClInclude Include="include\PixelScoreImageTransform.h" />
     <ClInclude Include="include\PixelScoreSource.h" />
     <ClInclude Include="include\RunLengthTransform.h" />
     <ClInclude Include="include\SequenceCounterTreeNode.h" />
+    <ClInclude Include="include\SimpleBoundingBoxValidator.h" />
     <ClInclude Include="include\Tetragon.h" />
     <ClInclude Include="include\TransitionStat.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ColorFilter.cpp" />
     <ClCompile Include="src\DefaultLutColorFilter.cpp" />
+    <ClCompile Include="src\DetectionBoundingBoxCollector.cpp" />
     <ClCompile Include="src\FsmBuilder.cpp" />
     <ClCompile Include="src\FsmColorFilter.cpp" />
     <ClCompile Include="src\ImageTransitionStat.cpp" />
     <ClCompile Include="src\LutCalibrationPattern.cpp" />
     <ClCompile Include="src\LutColorFilter.cpp" />
-    <ClCompile Include="src\LutFsmLocator.cpp" />
     <ClCompile Include="src\PixelPrecisionCalculator.cpp" />
     <ClCompile Include="src\PixelScoreImageTransform.cpp" />
     <ClCompile Include="src\RunLengthTransform.cpp" />
