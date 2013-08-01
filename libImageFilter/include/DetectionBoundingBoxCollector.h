@@ -78,6 +78,11 @@ namespace smeyel
 			is copied into validatedBoundingBoxes. */
 		void ValidateBoundingBoxes();
 
+		std::vector<cv::Rect> getCopyValidBoundingBoxes()
+		{
+			return this->validatedBoundingBoxes;
+		}
+
 		/** Draws rectangles in validatedBoundingBoxes or
 			initialBoundingBoxes depending on drawInitials. */
 		void ShowBoundingBoxes(cv::Mat &img, cv::Scalar color, bool drawInitials=false);

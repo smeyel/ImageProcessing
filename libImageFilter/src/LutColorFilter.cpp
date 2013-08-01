@@ -118,7 +118,7 @@ void LutColorFilter::Filter(Mat *src, Mat *dst, std::vector<Rect> *resultBoundin
 	{
 		Filter_All(*src,*dst);
 		// Copy bounding boxes from internal vector
-		*resultBoundingBoxes = boundingBoxes;
+		*resultBoundingBoxes = collector->getCopyValidBoundingBoxes();
 	}
 	else if (dst!=NULL && resultBoundingBoxes==NULL)
 	{
@@ -128,7 +128,7 @@ void LutColorFilter::Filter(Mat *src, Mat *dst, std::vector<Rect> *resultBoundin
 	{
 		Filter_NoMatOutputNoMask(*src);
 		// Copy bounding boxes from internal vector
-		*resultBoundingBoxes = boundingBoxes;
+		*resultBoundingBoxes = collector->getCopyValidBoundingBoxes();
 	}
 }
 

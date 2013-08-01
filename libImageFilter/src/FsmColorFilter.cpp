@@ -210,5 +210,5 @@ void FsmColorFilter::Filter(cv::Mat *src, cv::Mat *dst, std::vector<cv::Rect> *r
 	}
 	ConsolidateBoundingBoxes();
 	// Copy bounding boxes from internal vector
-	*resultBoundingBoxes = boundingBoxes;
+	*resultBoundingBoxes = collector->getCopyValidBoundingBoxes();
 }
