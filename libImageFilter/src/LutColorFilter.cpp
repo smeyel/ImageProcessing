@@ -53,6 +53,13 @@ string LutColorFilter::GetColorcodeName(unsigned char colorcode)
 	return string("?");
 }
 
+void LutColorFilter::ShowColorcodeNames(std::ostream &stream)
+{
+	for(unsigned int i=0; i<colorcodeNames.size(); i++)
+	{
+		stream << "colorcode " << i << ": " << colorcodeNames[i] << std::endl;
+	}
+}
 
 void LutColorFilter::ExtendLutToConformMask(Mat &image, Mat &colorCodeMask, unsigned char maskSkipValue)
 {
