@@ -10,32 +10,10 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\FastColorFilter.cpp" />
-    <ClCompile Include="src\MarkerCC2.cpp" />
-    <ClCompile Include="src\MarkerCC2Locator.cpp" />
-    <ClCompile Include="src\MarkerCC2Tracker.cpp" />
-    <ClCompile Include="src\TwoColorLocator.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\DetectionResultExporterBase.h" />
-    <ClInclude Include="include\FastColorFilter.h" />
-    <ClInclude Include="include\MarkerBase.h" />
-    <ClInclude Include="include\MarkerCC2.h" />
-    <ClInclude Include="include\MarkerCC2Locator.h" />
-    <ClInclude Include="include\MarkerCC2Tracker.h" />
-    <ClInclude Include="include\TimeMeasurementCodeDefines.h" />
-    <ClInclude Include="include\TwoColorLocator.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Framework\libLogConfigTime\libLogConfigTime.vcxproj">
-      <Project>{8927a516-de0f-4550-ae3f-14876252f716}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{E9E73514-1E7D-4EA4-9FE7-FE83F887D38C}</ProjectGuid>
+    <ProjectGuid>{757C1C16-4B1F-465F-9546-F98ED48A2DFF}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>libTwoColorCircleMarker</RootNamespace>
+    <RootNamespace>libTimeSyncBeacon</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -55,12 +33,10 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\props\OpenCV_Debug.props" />
-    <Import Project="..\..\Framework\props\Framework.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\props\OpenCV_Release.props" />
-    <Import Project="..\..\Framework\props\Framework.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
@@ -96,6 +72,23 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\CircleXYR.h" />
+    <ClInclude Include="include\SmartVector.h" />
+    <ClInclude Include="include\TimeSyncBeacon.h" />
+    <ClInclude Include="include\TimeSyncBeaconConverter.h" />
+    <ClInclude Include="include\TimeSyncBeaconReader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\CircleXYR.cpp" />
+    <ClCompile Include="src\SmartVector.cpp" />
+    <ClCompile Include="src\TimeSyncBeacon.cpp" />
+    <ClCompile Include="src\TimeSyncBeaconConverter.cpp" />
+    <ClCompile Include="src\TimeSyncBeaconReader.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

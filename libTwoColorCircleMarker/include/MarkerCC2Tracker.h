@@ -12,10 +12,10 @@
 
 #include "DetectionResultExporterBase.h"
 
-#include "ConfigManagerBase.h"
+#include "SimpleIniConfigReader.h"
 
 using namespace cv;
-using namespace MiscTimeAndConfig;
+using namespace LogConfigTime;
 
 namespace TwoColorCircleMarker
 {
@@ -34,10 +34,17 @@ namespace TwoColorCircleMarker
 	class MarkerCC2Tracker
 	{
 		// Internal configuration class
-		class ConfigManager : public MiscTimeAndConfig::ConfigManagerBase
+		class ConfigManager
 		{
 			// This method is called by init of the base class to read the configuration values.
-			virtual bool readConfiguration(CSimpleIniA *ini);
+            virtual bool readConfiguration(const char *filename);
+
+		public:
+            void init(const char *filename)
+			{
+				readConfiguration(filename);
+			}
+
 		public:
 			// Show verbose frames
 			bool visualizeColorCodedFrame;
@@ -148,7 +155,7 @@ namespace TwoColorCircleMarker
 			@param width	Width of the image if useDefaultInternalFrames is true.
 			@param height	Height of the image if useDefaultInternalFrames is true.
 		*/
-		void init(char *configfilename, bool useDefaultInternalFrames=false, int width=0, int height=0);
+        void init(const char *configfilename, bool useDefaultInternalFrames=false, int width=0, int height=0);
 
 		/** Interface for processing a new frame. It contains: color filtering, marker localization
 			  (accelerated by location predicion if available) and marker code validation.

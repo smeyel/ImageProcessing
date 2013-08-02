@@ -18,17 +18,20 @@
 using namespace cv;
 using namespace std;
 using namespace TwoColorCircleMarker;
-using namespace Logging;
+using namespace LogConfigTime;
 
 #define LOG_TAG "SMEyeL::TwoColorLocator"
 
 // Config manager
-bool TwoColorLocator::ConfigManager::readConfiguration(CSimpleIniA *ini)
+bool TwoColorLocator::ConfigManager::readConfiguration(const char *filename)
 {
-	verboseRectConsolidationCandidates = ini->GetBoolValue("TwoColorLocator","verboseRectConsolidationCandidates",false,NULL);
-	verboseRectConsolidationResults = ini->GetBoolValue("TwoColorLocator","verboseRectConsolidationResults",false,NULL);
-	verboseTxt_RectConsolidation = ini->GetBoolValue("TwoColorLocator","verboseTxt_RectConsolidation",false,NULL);
-	verboseTxt_RectConsolidationSummary = ini->GetBoolValue("TwoColorLocator","verboseTxt_RectConsolidationSummary",false,NULL);
+	LogConfigTime::SimpleIniConfigReader *SIreader = new LogConfigTime::SimpleIniConfigReader(filename);
+	LogConfigTime::ConfigReader *reader = SIreader;
+
+	verboseRectConsolidationCandidates = reader->getBoolValue("TwoColorLocator","verboseRectConsolidationCandidates");
+	verboseRectConsolidationResults = reader->getBoolValue("TwoColorLocator","verboseRectConsolidationResults");
+	verboseTxt_RectConsolidation = reader->getBoolValue("TwoColorLocator","verboseTxt_RectConsolidation");
+	verboseTxt_RectConsolidationSummary = reader->getBoolValue("TwoColorLocator","verboseTxt_RectConsolidationSummary");
 	return true;	// Successful
 }
 
@@ -37,7 +40,7 @@ TwoColorLocator::TwoColorLocator()
 	verboseImage = NULL;
 }
 
-void TwoColorLocator::init(char *configFileName)
+void TwoColorLocator::init(const char *configFileName)
 {
 	configManager.init(configFileName);
 }
@@ -116,7 +119,7 @@ void TwoColorLocator::consolidateFastColorFilterRects(Rect* candidateRects, int 
 
 	if (configManager.verboseTxt_RectConsolidationSummary)
 	{
-		Logger::log(Logger::LOGLEVEL_VERBOSE, LOG_TAG, "Rect consolidation effect: %d rect -> %d\n", initialRectNum, resultRectNum);
+		Logger::getInstance()->Log(Logger::LOGLEVEL_VERBOSE, LOG_TAG, "Rect consolidation effect: %d rect -> %d\n", initialRectNum, resultRectNum);
 	}
 }
 
@@ -144,7 +147,7 @@ bool TwoColorLocator::updateRectToRealSize(Mat &srcCC, Rect &newRect, Mat *verbo
 	{
 		if (configManager.verboseTxt_RectConsolidation)
 		{
-			Logger::log(Logger::LOGLEVEL_VERBOSE, LOG_TAG, "TwoColorLocator::updateRectToRealSize(): horizontal -> REJECT\n");
+			Logger::getInstance()->Log(Logger::LOGLEVEL_VERBOSE, LOG_TAG, "TwoColorLocator::updateRectToRealSize(): horizontal -> REJECT\n");
 		}
 		return false;
 	}
@@ -166,7 +169,7 @@ bool TwoColorLocator::updateRectToRealSize(Mat &srcCC, Rect &newRect, Mat *verbo
 		if (configManager.verboseTxt_RectConsolidation)
 		{
 			logMsg << " -> x" << newRect.x << " y" << newRect.y << " w" << newRect.width << " h" << newRect.height << endl;
-			Logger::log(Logger::LOGLEVEL_VERBOSE, LOG_TAG, logMsg.str().c_str());
+			Logger::getInstance()->Log(Logger::LOGLEVEL_VERBOSE, LOG_TAG, logMsg.str().c_str());
 			logMsg.str(""); // clear
 		}
 		return true;
@@ -176,7 +179,7 @@ bool TwoColorLocator::updateRectToRealSize(Mat &srcCC, Rect &newRect, Mat *verbo
 		if (configManager.verboseTxt_RectConsolidation)
 		{
 			logMsg << " -> REJECT" << endl;
-			Logger::log(Logger::LOGLEVEL_VERBOSE, LOG_TAG, logMsg.str().c_str());
+			Logger::getInstance()->Log(Logger::LOGLEVEL_VERBOSE, LOG_TAG, logMsg.str().c_str());
 			logMsg.str(""); // clear
 		}
 		return false;

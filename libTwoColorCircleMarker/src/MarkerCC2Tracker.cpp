@@ -17,9 +17,12 @@ using namespace cv;
 using namespace TwoColorCircleMarker;
 
 // Config manager
-bool MarkerCC2Tracker::ConfigManager::readConfiguration(CSimpleIniA *ini)
+bool MarkerCC2Tracker::ConfigManager::readConfiguration(const char *filename)
 {
-	visualizeColorCodedFrame = ini->GetBoolValue("MarkerCC2Tracker","visualizeColorCodedFrame",false,NULL);
+	LogConfigTime::SimpleIniConfigReader *SIreader = new LogConfigTime::SimpleIniConfigReader(filename);
+	LogConfigTime::ConfigReader *reader = SIreader;
+
+	visualizeColorCodedFrame = reader->getBoolValue("MarkerCC2Tracker","visualizeColorCodedFrame");
 	return true;	// Successful
 }
 
@@ -68,7 +71,7 @@ MarkerCC2Tracker::~MarkerCC2Tracker()
 }
 
 
-void MarkerCC2Tracker::init(char *configfilename, bool useDefaultInternalFrames, int width, int height)
+void MarkerCC2Tracker::init(const char *configfilename, bool useDefaultInternalFrames, int width, int height)
 {
 	if (useDefaultInternalFrames)
 	{

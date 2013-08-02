@@ -9,7 +9,7 @@
 #include "Logger.h"
 
 using namespace std;
-using namespace Logging;
+using namespace LogConfigTime;
 
 #define LOG_TAG "SMEyeL::FastColorFilter"
 
@@ -145,7 +145,7 @@ void FastColorFilter::RegisterDetection(int row, int colStart, int colEnd)
 		if (!foundFreeDetectionRect)
 		{
 			// Send warning in this case!
-			Logger::log(Logger::LOGLEVEL_WARNING, LOG_TAG, "WARNING: FastColorFilter: no enough detection rectangle space to store detections!\n");
+			Logger::getInstance()->Log(Logger::LOGLEVEL_WARNING, LOG_TAG, "WARNING: FastColorFilter: no enough detection rectangle space to store detections!\n");
 		}
 	}
 }
@@ -173,7 +173,7 @@ void FastColorFilter::FinishRow(int rowIdx)
 			if (nextFreeCandidateRectIdx >= MAXCANDIDATERECTNUM)
 			{
 				nextFreeCandidateRectIdx = MAXCANDIDATERECTNUM-1;
-				Logger::log(Logger::LOGLEVEL_WARNING, LOG_TAG, "WARNING: FastColorFilter: no enough candidate marker rectangle space!\n");
+				Logger::getInstance()->Log(Logger::LOGLEVEL_WARNING, LOG_TAG, "WARNING: FastColorFilter: no enough candidate marker rectangle space!\n");
 			}
 
 			// Delete detection rect
@@ -255,8 +255,10 @@ void FastColorFilter::FindMarkerCandidates(cv::Mat &src, cv::Mat &dst)
 			*resultPtr++ = colorCode;
 
 			// Handle masks (2 masks)
-			bool isMask0Color = (colorCode==mask0ColorCode)?255:0;
-			bool isMask1Color = (colorCode==mask1ColorCode)?255:0;
+			//bool isMask0Color = (colorCode==mask0ColorCode)?255:0;
+			//bool isMask1Color = (colorCode==mask1ColorCode)?255:0;
+			bool isMask0Color = (colorCode==mask0ColorCode);
+			bool isMask1Color = (colorCode==mask1ColorCode);
 			*overlapDataPtr = 0;
 
 			// Process mask overlap
@@ -370,7 +372,6 @@ void FastColorFilter::VisualizeDecomposedImage(cv::Mat &src, cv::Mat &dst)
 	assert(src.cols == dst.cols);
 	assert(src.rows == dst.rows);
 
-	uchar colorCode;
 	// Go along every pixel and do the following:
 	for (int row=0; row<src.rows; row++)
 	{
