@@ -69,6 +69,9 @@
     <ClInclude Include="include\SimpleBoundingBoxValidator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\LutDiffColorFilter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ColorFilter.cpp">
@@ -111,6 +114,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\DetectionBoundingBoxCollector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LutDiffColorFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
