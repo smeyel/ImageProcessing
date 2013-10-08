@@ -64,7 +64,6 @@ namespace smeyel
 		/** Binary (0, 255) detection mask. Inidcates areas where ColorCodeToFind is located.
 			@warning Only used if Filter is given dst and resultBoundingBoxes as well! Otherwise, omitted.
 		*/
-
 		cv::Mat *DetectionMask;
 
 		/** Execute filter on an image

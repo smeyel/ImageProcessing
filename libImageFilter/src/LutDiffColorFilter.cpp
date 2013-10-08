@@ -39,11 +39,11 @@ void LutDiffColorFilter::Filter(Mat *src0, Mat *src1, Mat *dst, std::vector<Rect
 		// Copy bounding boxes from internal vector
 		*resultBoundingBoxes = collector->getCopyValidBoundingBoxes();
 	}
-/*	else if (dst!=NULL && resultBoundingBoxes==NULL)
+	else if (dst!=NULL && resultBoundingBoxes==NULL)
 	{
 		Filter_NoBoundingBox(*src0,*src1,*dst);
 	}
-	else if (dst==NULL && resultBoundingBoxes!=NULL)
+/*	else if (dst==NULL && resultBoundingBoxes!=NULL)
 	{
 		Filter_NoMatOutputNoMask(*src0,*src1);
 		// Copy bounding boxes from internal vector
@@ -53,8 +53,7 @@ void LutDiffColorFilter::Filter(Mat *src0, Mat *src1, Mat *dst, std::vector<Rect
 
 void LutDiffColorFilter::Filter_All(Mat &src0, Mat &src1, cv::Mat &dst)
 {
-	// Assert for only 8UC1 output images
-	assert(dst.type() == CV_8UC1);
+	// Assert for only 8UC1 output images	assert(dst.type() == CV_8UC1);
 	// Assert dst has same size as src
 	assert(src0.cols == dst.cols);
 	assert(src0.rows == dst.rows);
@@ -152,41 +151,55 @@ void LutDiffColorFilter::Filter_All(Mat &src0, Mat &src1, cv::Mat &dst)
 	}	// end for row
 }
 
-/*void LutDiffColorFilter::Filter_NoBoundingBox(Mat &src0, Mat &src1, cv::Mat &dst)
+void LutDiffColorFilter::Filter_NoBoundingBox(Mat &src0, Mat &src1, cv::Mat &dst)
 {
-	// Assert for only 8UC1 output images
-	assert(dst.type() == CV_8UC1);
+	// Assert for only 8UC1 output images	assert(dst.type() == CV_8UC1);
 	// Assert dst has same size as src
 	assert(src0.cols == dst.cols);
 	assert(src0.rows == dst.rows);
 	assert(src1.cols == dst.cols);
 	assert(src1.rows == dst.rows);
 
-	uchar colorCode;
+	uchar colorCode0;
+	uchar colorCode1;
+	uchar detectColorCode = this->ColorCodeToFind; // Stored for faster access
 
 	// Go along every pixel and do the following:
 	for (int row=0; row<src0.rows; row++)
 	{
 		// Calculate pointer to the beginning of the current row
-		const uchar *ptr = (const uchar *)(src.data + row*src.step);
+		const uchar *ptr0 = (const uchar *)(src0.data + row*src0.step);
+		const uchar *ptr1 = (const uchar *)(src1.data + row*src1.step);
 		// Result pointer
 		uchar *resultPtr = (uchar *)(dst.data + row*dst.step);
 
 		// Go along every BGR colorspace pixel
-		for (int col=0; col<src.cols; col++)
+		for (int col=0; col<src0.cols; col++)
 		{
-			uchar B = *ptr++;
-			uchar G = *ptr++;
-			uchar R = *ptr++;
+			uchar B = *ptr0++;
+			uchar G = *ptr0++;
+			uchar R = *ptr0++;
 			unsigned int idxR = R >> 5;
 			unsigned int idxG = G >> 5;
 			unsigned int idxB = B >> 5;
 			unsigned int idx = (idxR << 6) | (idxG << 3) | idxB;
-			colorCode = RgbLut[idx];
-			*resultPtr++ = colorCode;
+			colorCode0 = RgbLut[idx];
+
+			B = *ptr1++;
+			G = *ptr1++;
+			R = *ptr1++;
+			idxR = R >> 5;
+			idxG = G >> 5;
+			idxB = B >> 5;
+			idx = (idxR << 6) | (idxG << 3) | idxB;
+			colorCode1 = RgbLut[idx];
+
+			uchar codeDiff = (colorCode0 != colorCode1) ? 255 : 0;
+
+			*resultPtr++ = codeDiff;
 		}	// end for col
 	}	// end for row
-}*/
+}
 
 /*void LutDiffColorFilter::Filter_NoMatOutputNoMask(Mat &src0, Mat &src1)
 {

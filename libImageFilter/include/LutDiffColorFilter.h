@@ -11,8 +11,8 @@ namespace smeyel
 	class LutDiffColorFilter : public LutColorFilter
 	{
 		void Filter_All(cv::Mat &src0, cv::Mat &src1, cv::Mat &dst);
-/*		void Filter_NoBoundingBox(cv::Mat &src0, cv::Mat &src1, cv::Mat &dst);
-		void Filter_NoMatOutputNoMask(cv::Mat &src0, cv::Mat &src1); */
+		void Filter_NoBoundingBox(cv::Mat &src0, cv::Mat &src1, cv::Mat &dst);
+		/*void Filter_NoMatOutputNoMask(cv::Mat &src0, cv::Mat &src1); */
 	protected:
 
 	public:
