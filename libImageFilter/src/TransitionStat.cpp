@@ -111,7 +111,7 @@ unsigned char TransitionStat::getScoreForValue(const unsigned int inputValue)
 void TransitionStat::showBufferContent(const char *bufferName, unsigned int *buffer, unsigned int length)
 {
 	cout << "Buffer [" << bufferName << "]: ";
-	for(int i=0; i<length; i++)
+	for(unsigned int i=0; i<length; i++)
 	{
 		cout << *buffer;
 		buffer++;

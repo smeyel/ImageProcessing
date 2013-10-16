@@ -140,7 +140,7 @@ void RunLengthTransform::load(const char *filename)
 	}
 	std::ifstream file;
 	file.open(filename);
-	int value;
+//	int value;
 	file >> limitNumber;
 	this->limits = new unsigned int[limitNumber];
 

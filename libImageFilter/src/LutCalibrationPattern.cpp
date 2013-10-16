@@ -8,7 +8,7 @@ int LutCalibrationPattern::findMinIdx(vector<Vec3f> marks, float coeffX, float c
 {
 	int minIdx = 0;
 	float minValue = coeffX*marks[0][0] + coeffY*marks[0][1] + offset;
-	for(int i=1; i<marks.size(); i++)
+	for(unsigned int i=1; i<marks.size(); i++)
 	{
 		float currentValue = coeffX*marks[i][0] + coeffY*marks[i][1] + offset;
 		if (currentValue < minValue)
