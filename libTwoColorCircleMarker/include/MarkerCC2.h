@@ -84,6 +84,14 @@ namespace TwoColorCircleMarker
 		/** Marker locator used to validate the read MarkerID.
 		*/
 		MarkerCC2Locator *markerLocator;
+		
+		/** The inner eclipse within the marker.
+		*/
+		RotatedRect innerEllipse;
+		
+		/** The outer eclipse within the marker.
+		*/
+		RotatedRect outerEllipse;
 
 		/** Constructor
 		*/
@@ -128,8 +136,6 @@ namespace TwoColorCircleMarker
 		// May be used for color recognition adjustments.
 		Point RedInnerBorders[8];
 		Point RedOuterBorders[8];
-		RotatedRect innerEllipse;
-		RotatedRect outerEllipse;
 
 		// --- Reading marker code areas
 		void scanEllipses(Mat &srcCC);
