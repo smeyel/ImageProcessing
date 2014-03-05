@@ -7,14 +7,14 @@ namespace smeyel
 	class SimpleBoundingBoxValidator : public BoundingBoxValidator
 	{
 	public:
-		int minWidht, maxWidth;
+		int minWidth, maxWidth;
 		int minHeight, maxHeight;
 		float minRatio, maxRatio;	// width / height
 
 		SimpleBoundingBoxValidator()
 		{
 			// Set defaults
-			minWidht = 5;
+			minWidth = 5;
 			maxWidth = 300;
 			minHeight = 5;
 			maxHeight = 300;
@@ -24,7 +24,7 @@ namespace smeyel
 
 		virtual bool Validate(cv::Rect rect)
 		{
-			if (rect.width < minWidht || rect.width > maxWidth)
+			if (rect.width < minWidth || rect.width > maxWidth)
 				return false;
 			if (rect.height < minHeight || rect.height > maxHeight)
 				return false;
